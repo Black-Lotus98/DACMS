@@ -21,10 +21,10 @@ export function BarcodesPage() {
 
   return (
     <div className="space-y-6">
-      <div><h1 className="text-2xl font-bold">إدارة الباركود</h1><p className="text-sm text-muted-foreground">M5: توليد الملصقات وإدارة طوابير الطباعة.</p></div>
+      <div><h1 className="text-2xl font-bold">Barcodes</h1><p className="text-sm text-muted-foreground">M5: توليد الملصقات وإدارة طوابير الطباعة.</p></div>
       <div className="grid md:grid-cols-3 gap-4">
         <section className="md:col-span-2 rounded-xl border bg-background overflow-x-auto">
-          <table className="w-full text-sm"><thead className="border-b bg-muted/40"><tr><th className="p-3 text-start">الكيان</th><th className="p-3 text-start">الرمز</th><th className="p-3 text-start">النوع</th><th className="p-3 text-start">الحالة</th><th className="p-3 text-start">المعاينة</th></tr></thead><tbody>{labels.map((l)=><tr key={l.id} className="border-b"><td className="p-3 font-mono">{l.entityId}</td><td className="p-3 font-mono">{l.code}</td><td className="p-3">{l.type}</td><td className="p-3">{l.active ? 'فعال' : 'غير فعال'}</td><td className="p-3"><button onClick={() => setSelectedLabelId(l.id)} className="text-primary hover:underline text-xs">عرض</button></td></tr>)}</tbody></table>
+          <table className="w-full text-sm"><thead className="border-b bg-muted/40"><tr><th className="p-3 text-start">الكيان</th><th className="p-3 text-start">الرمز</th><th className="p-3 text-start">Type</th><th className="p-3 text-start">Status</th><th className="p-3 text-start">المعاينة</th></tr></thead><tbody>{labels.map((l)=><tr key={l.id} className="border-b"><td className="p-3 font-mono">{l.entityId}</td><td className="p-3 font-mono">{l.code}</td><td className="p-3">{l.type}</td><td className="p-3">{l.active ? 'فعال' : 'غير فعال'}</td><td className="p-3"><button onClick={() => setSelectedLabelId(l.id)} className="text-primary hover:underline text-xs">Preview</button></td></tr>)}</tbody></table>
         </section>
         <section className="rounded-xl border bg-background p-4 space-y-3">
           <h2 className="font-semibold mb-2">طابور الطباعة</h2>

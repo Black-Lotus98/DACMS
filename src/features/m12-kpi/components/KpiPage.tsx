@@ -18,7 +18,7 @@ export function KpiPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">مؤشرات الأداء</h1>
+        <h1 className="text-2xl font-bold">KPI Dashboard</h1>
         <select
           value={selectedRole}
           onChange={(e) => setSelectedRole(e.target.value)}
@@ -34,7 +34,7 @@ export function KpiPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        عرض المؤشرات حسب الربط في وحدة M15.
+        Preview المؤشرات حسب الربط في وحدة M15.
       </p>
 
       <div className="grid md:grid-cols-3 gap-3">

@@ -39,7 +39,7 @@ export default function LoginPage() {
       <div className="mb-10 text-center space-y-2">
         <h1 className="text-3xl font-bold text-primary-a0">DACMS</h1>
         <p className="text-muted-foreground text-sm">
-          نظام إدارة مركز الوثائق والأرشيف — اختر دورك للمتابعة
+          Document & Archive Center Management System — choose your role to continue
         </p>
       </div>
 
@@ -63,7 +63,7 @@ export default function LoginPage() {
         })}
       </div>
 
-      <p className="mt-8 text-xs text-muted-foreground">بيئة تجريبية — للعرض والتطوير فقط</p>
+      <p className="mt-8 text-xs text-muted-foreground">Demo environment — for showcase and development only</p>
     </div>
   );
 }

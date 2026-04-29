@@ -12,8 +12,8 @@ export function PermissionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">المستخدمون والصلاحيات</h1>
-        <p className="text-sm text-muted-foreground">بداية وحدة M10: إدارة المستخدمين، الأدوار، وسجل الوصول.</p>
+        <h1 className="text-2xl font-bold">Users & Permissions</h1>
+        <p className="text-sm text-muted-foreground">بداية وحدة M10: إدارة المستخدمين، الأدوار، وAccess log.</p>
       </div>
 
       <section className="rounded-xl border bg-background p-4">
@@ -25,7 +25,7 @@ export function PermissionsPage() {
                 <th className="text-start p-2">الاسم</th>
                 <th className="text-start p-2">البريد</th>
                 <th className="text-start p-2">الدور</th>
-                <th className="text-start p-2">الحالة</th>
+                <th className="text-start p-2">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -53,7 +53,7 @@ export function PermissionsPage() {
                       ))}
                     </select>
                   </td>
-                  <td className="p-2">{u.isActive ? 'نشط' : 'موقوف'}</td>
+                  <td className="p-2">{u.isActive ? 'Active' : 'Inactive'}</td>
                 </tr>
               ))}
             </tbody>
@@ -68,14 +68,14 @@ export function PermissionsPage() {
             {roles.map((r) => (
               <li key={r.id} className="flex justify-between border rounded-md p-2">
                 <span>{r.name}</span>
-                <span className="text-muted-foreground">{r.permissions.length} صلاحية</span>
+                <span className="text-muted-foreground">{r.permissions.length} permission</span>
               </li>
             ))}
           </ul>
         </section>
 
         <section className="rounded-xl border bg-background p-4">
-          <h2 className="font-semibold mb-3">مصفوفة الصلاحيات</h2>
+          <h2 className="font-semibold mb-3">Permission matrix</h2>
           <div className="space-y-3 mb-5">
             {roles.map((role) => (
               <div key={role.id} className="border rounded-md p-2">
@@ -106,7 +106,7 @@ export function PermissionsPage() {
             ))}
           </div>
 
-          <h2 className="font-semibold mb-3">سجل الوصول</h2>
+          <h2 className="font-semibold mb-3">Access log</h2>
           <ul className="space-y-2 text-sm">
             {accessLogs.map((log) => (
               <li key={log.id} className="border rounded-md p-2">

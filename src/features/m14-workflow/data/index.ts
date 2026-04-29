@@ -3,12 +3,12 @@ import { ExecutionStatus, StepType, WorkflowStatus, type Workflow, type Workflow
 export const workflowsSeed: Workflow[] = [
   {
     id: 'wf1',
-    name: 'سير اعتماد الأرشفة',
+    name: 'سير Approve الأرشفة',
     status: WorkflowStatus.Published,
     steps: [
-      { id: 's1', name: 'مراجعة أولية', type: StepType.Review, slaHours: 8, order: 1 },
-      { id: 's2', name: 'اعتماد المشرف', type: StepType.Approval, slaHours: 12, order: 2 },
-      { id: 's3', name: 'إشعار التنفيذ', type: StepType.Notify, slaHours: 2, order: 3 },
+      { id: 's1', name: 'Initial review', type: StepType.Review, slaHours: 8, order: 1 },
+      { id: 's2', name: 'Approve المشرف', type: StepType.Approval, slaHours: 12, order: 2 },
+      { id: 's3', name: 'Execution notification', type: StepType.Notify, slaHours: 2, order: 3 },
     ],
   },
   {
@@ -17,7 +17,7 @@ export const workflowsSeed: Workflow[] = [
     status: WorkflowStatus.Draft,
     steps: [
       { id: 's4', name: 'تدقيق الطلب', type: StepType.Review, slaHours: 6, order: 1 },
-      { id: 's5', name: 'اعتماد المدير', type: StepType.Approval, slaHours: 24, order: 2 },
+      { id: 's5', name: 'Approve المدير', type: StepType.Approval, slaHours: 24, order: 2 },
     ],
   },
 ];

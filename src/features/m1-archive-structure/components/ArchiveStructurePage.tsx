@@ -61,7 +61,7 @@ export function ArchiveStructurePage() {
         <div className="flex items-center gap-3">
           <Warehouse className="w-6 h-6 text-primary-a0" />
           <div>
-            <h1 className="text-2xl font-bold">هيكل الأرشيف</h1>
+            <h1 className="text-2xl font-bold">Archive Structure</h1>
             <p className="text-sm text-muted-foreground">إدارة القاعات والرفوف والصناديق</p>
           </div>
         </div>
@@ -71,39 +71,39 @@ export function ArchiveStructurePage() {
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors ${view === 'dashboard' ? 'bg-background shadow-sm font-medium' : 'text-muted-foreground hover:text-foreground'}`}
           >
             <LayoutGrid className="w-4 h-4" />
-            لوحة الإشغال
+            Occupancy dashboard
           </button>
           <button
             onClick={() => setView('tree')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors ${view === 'tree' ? 'bg-background shadow-sm font-medium' : 'text-muted-foreground hover:text-foreground'}`}
           >
             <TreePine className="w-4 h-4" />
-            شجرة الهيكل
+            Structure tree
           </button>
         </div>
       </div>
 
       <section className="rounded-xl border bg-background p-4 grid lg:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <h2 className="font-semibold text-sm">إضافة قاعة</h2>
-          <input value={newRoomName} onChange={(e)=>setNewRoomName(e.target.value)} placeholder="اسم القاعة" className="w-full h-9 rounded-md border px-3 text-sm" />
-          <input value={newRoomCode} onChange={(e)=>setNewRoomCode(e.target.value)} placeholder="رمز القاعة (R04)" className="w-full h-9 rounded-md border px-3 text-sm" />
+          <h2 className="font-semibold text-sm">Add room</h2>
+          <input value={newRoomName} onChange={(e)=>setNewRoomName(e.target.value)} placeholder="Room name" className="w-full h-9 rounded-md border px-3 text-sm" />
+          <input value={newRoomCode} onChange={(e)=>setNewRoomCode(e.target.value)} placeholder="Room code (R04)" className="w-full h-9 rounded-md border px-3 text-sm" />
           <button onClick={createRoom} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
         </div>
         <div className="space-y-2">
-          <h2 className="font-semibold text-sm">إضافة رف</h2>
-          <input value={newShelfCode} onChange={(e)=>setNewShelfCode(e.target.value)} placeholder="رمز الرف" className="w-full h-9 rounded-md border px-3 text-sm" />
+          <h2 className="font-semibold text-sm">Add shelf</h2>
+          <input value={newShelfCode} onChange={(e)=>setNewShelfCode(e.target.value)} placeholder="Shelf code" className="w-full h-9 rounded-md border px-3 text-sm" />
           <select value={newShelfCabinetId} onChange={(e)=>setNewShelfCabinetId(e.target.value)} className="w-full h-9 rounded-md border px-3 text-sm">
             {cabinets.map((cab) => <option key={cab.id} value={cab.id}>{cab.code}</option>)}
           </select>
           <button onClick={createShelf} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
         </div>
         <div className="space-y-2">
-          <h2 className="font-semibold text-sm">نقل صندوق</h2>
+          <h2 className="font-semibold text-sm">Transfer box</h2>
           <select value={transferBoxId} onChange={(e)=>setTransferBoxId(e.target.value)} className="w-full h-9 rounded-md border px-3 text-sm">
             {boxes.map((b) => <option key={b.id} value={b.id}>{b.code}</option>)}
           </select>
-          <input value={transferShelfId} onChange={(e)=>setTransferShelfId(e.target.value)} placeholder="معرف الرف الهدف (sh-...)" className="w-full h-9 rounded-md border px-3 text-sm" />
+          <input value={transferShelfId} onChange={(e)=>setTransferShelfId(e.target.value)} placeholder="Target shelf id (sh-...)" className="w-full h-9 rounded-md border px-3 text-sm" />
           <button onClick={transferSelectedBox} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">نقل</button>
         </div>
       </section>

@@ -28,7 +28,7 @@ export function ReportsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">التقارير والإحصائيات</h1>
+      <h1 className="text-2xl font-bold">Reports & Statistics</h1>
 
       <section className="rounded-lg border bg-background p-3 flex flex-wrap items-center gap-2">
         <select

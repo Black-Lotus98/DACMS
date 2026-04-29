@@ -33,10 +33,10 @@ export function RecordFormPage() {
 
   return (
     <div className="max-w-2xl space-y-4">
-      <h1 className="text-2xl font-bold">تسجيل سجل جديد</h1>
+      <h1 className="text-2xl font-bold">Registration New record</h1>
       <form onSubmit={onSubmit} className="rounded-xl border bg-background p-4 space-y-4">
         <div>
-          <label className="text-sm mb-1 block">العنوان</label>
+          <label className="text-sm mb-1 block">Title</label>
           <input value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full h-10 rounded-md border px-3" />
         </div>
         <div className="grid sm:grid-cols-2 gap-3">
@@ -45,12 +45,12 @@ export function RecordFormPage() {
             <input value={docType} onChange={(e) => setDocType(e.target.value)} className="w-full h-10 rounded-md border px-3" />
           </div>
           <div>
-            <label className="text-sm mb-1 block">الصندوق</label>
+            <label className="text-sm mb-1 block">Box</label>
             <input value={boxCode} onChange={(e) => setBoxCode(e.target.value)} className="w-full h-10 rounded-md border px-3" />
           </div>
         </div>
         <div>
-          <label className="text-sm mb-1 block">السرية</label>
+          <label className="text-sm mb-1 block">Secrecy</label>
           <select value={secrecy} onChange={(e) => setSecrecy(e.target.value as SecrecyLevel)} className="w-full h-10 rounded-md border px-3">
             <option value={SecrecyLevel.Public}>public</option>
             <option value={SecrecyLevel.Restricted}>restricted</option>
@@ -59,7 +59,7 @@ export function RecordFormPage() {
           </select>
         </div>
         <button type="submit" className="inline-flex h-9 px-4 items-center rounded-md bg-primary text-primary-foreground text-sm font-medium">
-          حفظ السجل
+          Save record
         </button>
       </form>
     </div>

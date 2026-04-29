@@ -19,21 +19,21 @@ export function LendingDetailPage() {
   }, [dispatch]);
 
   if (!request) {
-    return <div className="space-y-2"><p>الطلب غير موجود.</p><Link className="text-primary hover:underline" href={`/${local}/lending`}>رجوع</Link></div>;
+    return <div className="space-y-2"><p>Request not found.</p><Link className="text-primary hover:underline" href={`/${local}/lending`}>Back</Link></div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">تفاصيل طلب الإعارة</h1>
-        <Link href={`/${local}/lending`} className="text-primary hover:underline">رجوع</Link>
+        <h1 className="text-2xl font-bold">Lending request details</h1>
+        <Link href={`/${local}/lending`} className="text-primary hover:underline">Back</Link>
       </div>
       <section className="rounded-xl border bg-background p-4 space-y-2 text-sm">
-        <p><span className="text-muted-foreground">المرجع:</span> <span className="font-mono">{request.recordRef}</span></p>
-        <p><span className="text-muted-foreground">الجهة:</span> {request.requester}</p>
-        <p><span className="text-muted-foreground">السبب:</span> {request.purpose}</p>
-        <p><span className="text-muted-foreground">الاستحقاق:</span> {request.dueDate}</p>
-        <p><span className="text-muted-foreground">الحالة:</span> {request.status}</p>
+        <p><span className="text-muted-foreground">Reference:</span> <span className="font-mono">{request.recordRef}</span></p>
+        <p><span className="text-muted-foreground">Department:</span> {request.requester}</p>
+        <p><span className="text-muted-foreground">Reason:</span> {request.purpose}</p>
+        <p><span className="text-muted-foreground">Due date:</span> {request.dueDate}</p>
+        <p><span className="text-muted-foreground">Status:</span> {request.status}</p>
       </section>
       <div className="flex flex-wrap gap-2">
         <button
@@ -41,21 +41,21 @@ export function LendingDetailPage() {
           onClick={()=>dispatch(setRequestStatus({ id: request.id, status: LendingStatus.Approved }))}
           className="h-9 px-3 rounded-md border text-sm disabled:opacity-40"
         >
-          اعتماد
+          Approve
         </button>
         <button
           disabled={request.status !== LendingStatus.Approved}
           onClick={()=>dispatch(setRequestStatus({ id: request.id, status: LendingStatus.Active }))}
           className="h-9 px-3 rounded-md border text-sm disabled:opacity-40"
         >
-          تسليم
+          Dispatch
         </button>
         <button
           disabled={![LendingStatus.Active, LendingStatus.Overdue].includes(request.status)}
           onClick={()=>dispatch(setRequestStatus({ id: request.id, status: LendingStatus.Returned }))}
           className="h-9 px-3 rounded-md border text-sm disabled:opacity-40"
         >
-          إرجاع
+          Return
         </button>
       </div>
     </div>

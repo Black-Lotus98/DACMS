@@ -669,5 +669,6 @@ All 15 module handler files follow the same pattern. Switching to a real backend
 - **2026-04-29 — M9 depth pass:** Added report category/period filters, active report switching, and report preview panel behavior.
 - **2026-04-29 — M13 depth pass:** Added branch/department creation controls and responsible-email assignment flow for departments.
 - **2026-04-29 — Testing foundation pass:** Added Vitest setup + test scripts and reducer tests for M3/M6/M7 business rules; test suite currently passing.
+- **2026-04-29 — English-only pass:** Converted hardcoded Arabic UI/content strings to English across app modules/configs (translation message files intentionally unchanged).
 
 DACMS Frontend Execution Plan | Ministry of Industry & Trade | Confidential | April 2026

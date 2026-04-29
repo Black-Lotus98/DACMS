@@ -25,7 +25,7 @@ export function RoleBadge() {
 
       {open && (
         <div className="absolute top-full end-0 mt-1 w-52 rounded-lg border bg-background shadow-lg z-50 py-1">
-          <p className="px-3 py-1.5 text-xs text-muted-foreground">تغيير الدور</p>
+          <p className="px-3 py-1.5 text-xs text-muted-foreground">Switch role</p>
           {ALL_ROLES.map((r) => (
             <button
               key={r}

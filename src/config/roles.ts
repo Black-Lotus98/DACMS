@@ -14,11 +14,11 @@ export enum ClearanceLevel {
 }
 
 export const ROLE_LABELS: Record<RoleType, string> = {
-  [RoleType.CenterDirector]: 'مدير المركز',
-  [RoleType.ArchiveSupervisor]: 'مشرف الأرشيف',
-  [RoleType.ArchiveOfficer]: 'موظف الأرشيف',
-  [RoleType.Admin]: 'مدير النظام',
-  [RoleType.Beneficiary]: 'المستفيد',
+  [RoleType.CenterDirector]: 'Center Director',
+  [RoleType.ArchiveSupervisor]: 'Archive Supervisor',
+  [RoleType.ArchiveOfficer]: 'Archive Officer',
+  [RoleType.Admin]: 'System Admin',
+  [RoleType.Beneficiary]: 'Beneficiary',
 };
 
 export const ROLE_CLEARANCE: Record<RoleType, ClearanceLevel> = {

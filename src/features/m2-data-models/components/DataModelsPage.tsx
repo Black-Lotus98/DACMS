@@ -8,7 +8,7 @@ import { useAppDispatch } from '@/store/hooks';
 import { addCategory, addDocumentType, addMetadataField } from '../store/slice';
 
 const ACTION_LABELS: Record<ActionAfter, string> = {
-  [ActionAfter.Destroy]: 'إتلاف',
+  [ActionAfter.Destroy]: 'Destroy',
   [ActionAfter.Transfer]: 'نقل',
   [ActionAfter.Review]: 'مراجعة',
 };
@@ -77,14 +77,14 @@ export function DataModelsPage() {
       <div className="flex items-center gap-3">
         <Database className="w-6 h-6 text-primary-a0" />
         <div>
-          <h1 className="text-2xl font-bold">النماذج والبيانات</h1>
-          <p className="text-sm text-muted-foreground">أنواع الوثائق، هياكل الفئات، الحقول، وسياسات الاحتفاظ</p>
+          <h1 className="text-2xl font-bold">Data Models</h1>
+          <p className="text-sm text-muted-foreground">Document types، هياكل الفئات، الحقول، وRetention policies</p>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 p-1 rounded-lg bg-muted w-fit">
-        {([['types', 'أنواع الوثائق', FileText], ['retention', 'سياسات الاحتفاظ', Clock]] as const).map(
+        {([['types', 'Document types', FileText], ['retention', 'Retention policies', Clock]] as const).map(
           ([key, label, Icon]) => (
             <button
               key={key}
@@ -102,25 +102,25 @@ export function DataModelsPage() {
         <div className="space-y-3">
           <section className="rounded-xl border bg-background p-4 grid lg:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <h3 className="font-semibold text-sm">إضافة نوع وثيقة</h3>
-              <input value={docTypeName} onChange={(e)=>setDocTypeName(e.target.value)} placeholder="اسم النوع" className="w-full h-9 rounded-md border px-3 text-sm" />
+              <h3 className="font-semibold text-sm">Add document type</h3>
+              <input value={docTypeName} onChange={(e)=>setDocTypeName(e.target.value)} placeholder="اسم Type" className="w-full h-9 rounded-md border px-3 text-sm" />
               <input value={docTypeCode} onChange={(e)=>setDocTypeCode(e.target.value)} placeholder="الرمز (DOCX)" className="w-full h-9 rounded-md border px-3 text-sm font-mono" />
               <button onClick={createDocType} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
             </div>
             <div className="space-y-2">
-              <h3 className="font-semibold text-sm">إضافة فئة</h3>
+              <h3 className="font-semibold text-sm">Add category</h3>
               <select value={activeTypeId} onChange={(e)=>setSelectedTypeId(e.target.value)} className="w-full h-9 rounded-md border px-3 text-sm">
                 {documentTypes.map((dt) => <option key={dt.id} value={dt.id}>{dt.name}</option>)}
               </select>
-              <input value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} placeholder="اسم الفئة" className="w-full h-9 rounded-md border px-3 text-sm" />
+              <input value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} placeholder="Category name" className="w-full h-9 rounded-md border px-3 text-sm" />
               <button onClick={createCategory} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
             </div>
             <div className="space-y-2">
-              <h3 className="font-semibold text-sm">إضافة حقل بيانات</h3>
+              <h3 className="font-semibold text-sm">Add metadata field</h3>
               <select value={newFieldType} onChange={(e)=>setNewFieldType(e.target.value as FieldType)} className="w-full h-9 rounded-md border px-3 text-sm">
                 {Object.values(FieldType).map((ft)=><option key={ft} value={ft}>{ft}</option>)}
               </select>
-              <input value={newFieldLabel} onChange={(e)=>setNewFieldLabel(e.target.value)} placeholder="اسم الحقل" className="w-full h-9 rounded-md border px-3 text-sm" />
+              <input value={newFieldLabel} onChange={(e)=>setNewFieldLabel(e.target.value)} placeholder="Field label" className="w-full h-9 rounded-md border px-3 text-sm" />
               <button onClick={createMetadataField} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
             </div>
           </section>
@@ -155,8 +155,8 @@ export function DataModelsPage() {
             <thead className="border-b bg-muted/50">
               <tr>
                 <th className="text-start p-3 font-medium">السياسة</th>
-                <th className="text-start p-3 font-medium">فترة الاحتفاظ</th>
-                <th className="text-start p-3 font-medium">الإجراء بعد الانتهاء</th>
+                <th className="text-start p-3 font-medium">Retention period</th>
+                <th className="text-start p-3 font-medium">Action after period</th>
               </tr>
             </thead>
             <tbody>

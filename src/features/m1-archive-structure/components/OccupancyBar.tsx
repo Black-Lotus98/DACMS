@@ -13,7 +13,7 @@ export function OccupancyBar({ pct, showLabel = true }: OccupancyBarProps) {
     <div className="space-y-1">
       {showLabel && (
         <div className="flex justify-between text-xs">
-          <span className="text-muted-foreground">الإشغال</span>
+          <span className="text-muted-foreground">Occupancy</span>
           <span className={textColor}>{pct}%</span>
         </div>
       )}

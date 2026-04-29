@@ -35,7 +35,7 @@ export function KpiLinkingPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">ربط الهيكل بمؤشرات الأداء</h1>
+      <h1 className="text-2xl font-bold">ربط الهيكل بKPI Dashboard</h1>
 
       <section className="rounded-lg border bg-background p-4 space-y-3">
         <div className="flex items-center gap-2">
@@ -71,7 +71,7 @@ export function KpiLinkingPage() {
       </section>
 
       <section className="rounded-lg border bg-background p-4 space-y-2">
-        <h2 className="font-semibold text-sm">الحالة الحالية</h2>
+        <h2 className="font-semibold text-sm">Status الحالية</h2>
         {mappings.map((m) => (
           <div key={m.id} className="border rounded p-2 text-sm">
             <span className="font-medium">{m.role}</span>: {m.kpiKeys.join(', ')}

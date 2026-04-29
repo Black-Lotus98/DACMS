@@ -2,9 +2,9 @@ import { ClearanceLevel, RoleType, ROLE_CLEARANCE, ROLE_LABELS } from '@/config/
 import type { AccessLog, Permission, RoleEntity, UserEntity } from '../types';
 
 export const permissionsSeed: Permission[] = [
-  { id: 'p1', key: 'records.read', label: 'عرض السجلات', module: 'records' },
+  { id: 'p1', key: 'records.read', label: 'Preview السجلات', module: 'records' },
   { id: 'p2', key: 'records.write', label: 'تعديل السجلات', module: 'records' },
-  { id: 'p3', key: 'archive.manage', label: 'إدارة هيكل الأرشيف', module: 'archive' },
+  { id: 'p3', key: 'archive.manage', label: 'إدارة Archive Structure', module: 'archive' },
   { id: 'p4', key: 'users.manage', label: 'إدارة المستخدمين', module: 'permissions' },
 ];
 
@@ -21,7 +21,7 @@ export const rolesSeed: RoleEntity[] = Object.values(RoleType).map((type, idx) =
 export const usersSeed: UserEntity[] = [
   {
     id: 'u1',
-    fullName: 'مدير النظام',
+    fullName: 'System Admin',
     email: 'admin@dacms.gov',
     role: RoleType.Admin,
     clearanceLevel: ClearanceLevel.TopSecret,
@@ -29,7 +29,7 @@ export const usersSeed: UserEntity[] = [
   },
   {
     id: 'u2',
-    fullName: 'مشرف الأرشيف',
+    fullName: 'Archive Supervisor',
     email: 'supervisor@dacms.gov',
     role: RoleType.ArchiveSupervisor,
     clearanceLevel: ClearanceLevel.Confidential,
@@ -37,7 +37,7 @@ export const usersSeed: UserEntity[] = [
   },
   {
     id: 'u3',
-    fullName: 'موظف الأرشيف',
+    fullName: 'Archive Officer',
     email: 'officer@dacms.gov',
     role: RoleType.ArchiveOfficer,
     clearanceLevel: ClearanceLevel.Restricted,
