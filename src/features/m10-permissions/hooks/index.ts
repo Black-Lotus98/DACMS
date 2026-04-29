@@ -9,5 +9,7 @@ export function usePermissionsModule() {
     roles: state.roles,
     permissions: state.permissions,
     accessLogs: state.accessLogs,
+    getRoleByType: (type: string) => state.roles.find((role) => role.type === type) ?? null,
+    getUsersByRole: (type: string) => state.users.filter((user) => user.role === type),
   }), [state]);
 }

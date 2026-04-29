@@ -26,6 +26,11 @@ export function useArchiveModule() {
     shelves,
     boxes,
     roomOccupancy,
+    getRoomById: (id: string) => rooms.find((r) => r.id === id) ?? null,
+    getRowsByRoomId: (roomId: string) => rows.filter((r) => r.roomId === roomId),
+    getCabsByRowIds: (rowIds: string[]) => cabinets.filter((c) => rowIds.includes(c.rowId)),
+    getShelvesByCabIds: (cabIds: string[]) => shelves.filter((s) => cabIds.includes(s.cabinetId)),
+    getBoxesByShelfIds: (shelfIds: string[]) => boxes.filter((b) => shelfIds.includes(b.shelfId)),
     getShelfById: (id: string) => shelves.find((s) => s.id === id),
   };
 }

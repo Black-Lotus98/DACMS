@@ -6,10 +6,13 @@ import { useOrgModule } from '../hooks';
 import { OrgTree } from './OrgTree';
 import { useAppDispatch } from '@/store/hooks';
 import { addBranch, addDepartment, assignDepartmentResponsible } from '../store/slice';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export function OrgStructurePage() {
   const dispatch = useAppDispatch();
   const { organization, branches, getRootDepts, departments } = useOrgModule();
+  const { local } = useParams<{ local: string }>();
   const [branchName, setBranchName] = useState('');
   const [branchCode, setBranchCode] = useState('');
   const [deptName, setDeptName] = useState('');
@@ -74,7 +77,7 @@ export function OrgStructurePage() {
           <h2 className="font-semibold text-sm">Add branch</h2>
           <input value={branchName} onChange={(e)=>setBranchName(e.target.value)} placeholder="Branch name" className="w-full h-9 rounded-md border px-3 text-sm" />
           <input value={branchCode} onChange={(e)=>setBranchCode(e.target.value)} placeholder="Branch code" className="w-full h-9 rounded-md border px-3 text-sm font-mono" />
-          <button onClick={createBranch} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
+          <button onClick={createBranch} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
         </div>
         <div className="space-y-2">
           <h2 className="font-semibold text-sm">Add department</h2>
@@ -83,7 +86,7 @@ export function OrgStructurePage() {
           </select>
           <input value={deptName} onChange={(e)=>setDeptName(e.target.value)} placeholder="Department name" className="w-full h-9 rounded-md border px-3 text-sm" />
           <input value={deptCode} onChange={(e)=>setDeptCode(e.target.value)} placeholder="Department code" className="w-full h-9 rounded-md border px-3 text-sm font-mono" />
-          <button onClick={createDepartment} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
+          <button onClick={createDepartment} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
         </div>
         <div className="space-y-2">
           <h2 className="font-semibold text-sm">Assign department responsible</h2>
@@ -97,13 +100,17 @@ export function OrgStructurePage() {
 
       <div className="space-y-3">
         {branches.map((branch) => (
-          <OrgTree
-            key={branch.id}
-            branchName={branch.name}
-            branchCode={branch.code}
-            rootDepts={getRootDepts(branch.id)}
-            allDepts={departments}
-          />
+          <div key={branch.id} className="space-y-2">
+            <Link href={`/${local}/org-structure/branch/${branch.id}`} className="text-sm text-primary hover:underline">
+              Open branch view: {branch.name}
+            </Link>
+            <OrgTree
+              branchName={branch.name}
+              branchCode={branch.code}
+              rootDepts={getRootDepts(branch.id)}
+              allDepts={departments}
+            />
+          </div>
         ))}
       </div>
     </div>

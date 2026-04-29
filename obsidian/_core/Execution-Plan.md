@@ -670,5 +670,20 @@ All 15 module handler files follow the same pattern. Switching to a real backend
 - **2026-04-29 — M13 depth pass:** Added branch/department creation controls and responsible-email assignment flow for departments.
 - **2026-04-29 — Testing foundation pass:** Added Vitest setup + test scripts and reducer tests for M3/M6/M7 business rules; test suite currently passing.
 - **2026-04-29 — English-only pass:** Converted hardcoded Arabic UI/content strings to English across app modules/configs (translation message files intentionally unchanged).
+- **2026-04-29 — M6/M7 cross-module validation pass:** Added record-existence/eligibility checks against M3 records and duplicate open-request blocking for lending and destruction forms.
+- **2026-04-29 — M6 overdue subroute pass:** Added `/lending/overdue` route with overdue-only listing and wired an entry link from the main lending screen.
+- **2026-04-29 — M7 watchlist subroute pass:** Added `/destruction/watchlist` route with watchlist-only listing and wired an entry link from the main destruction screen.
+- **2026-04-29 — M8 unread subroute pass:** Added `/notifications/unread` route with unread-only listing and wired an entry link from the main notifications screen.
+- **2026-04-29 — M11 API-keys subroute pass:** Added `/integration/api-keys` route for focused API-key management and wired an entry link from the integration screen.
+- **2026-04-29 — M9 report-detail subroute pass:** Added `/reports/:id` route for focused report views and wired per-report entry links from the reports grid.
+- **2026-04-29 — M12 role-detail subroute pass:** Added `/kpi/role/:role` route for focused role KPI views and wired entry links from the KPI dashboard.
+- **2026-04-29 — M10 role-detail subroute pass:** Added `/permissions/role/:role` route for focused role members/permissions view and wired entry links from the roles list.
+- **2026-04-29 — M13 branch-detail subroute pass:** Added `/org-structure/branch/:id` route for focused branch department views and wired branch entry links from the org structure page.
+- **2026-04-29 — M1 room-detail subroute pass:** Added `/archive-structure/room/:id` route for focused room structure summaries and wired quick room entry links from the archive structure page.
+- **2026-04-29 — M2 type-detail subroute pass:** Added `/data-models/type/:id` route for focused document type details and wired entry links from the data models page.
+- **2026-04-29 — M4 saved-query subroute pass:** Added `/search/saved/:id` route for focused saved-query results and wired entry links from the search saved-queries list.
+- **2026-04-29 — M5 print-job subroute pass:** Added `/barcodes/print-job/:id` route for focused print queue item management and wired entry links from the barcodes page.
+- **2026-04-29 — M14 workflow-detail subroute pass:** Added `/workflow/:id` route for focused workflow definition/execution views and wired entry links from the workflow definitions list.
+- **2026-04-29 — M15 role-linking subroute pass:** Added `/kpi-linking/role/:role` route for focused role-to-KPI mapping details and wired entry links from the KPI linking screen.
 
 DACMS Frontend Execution Plan | Ministry of Industry & Trade | Confidential | April 2026

@@ -19,5 +19,6 @@ export function useDataModelsModule() {
       metadataFields.filter((f) => f.docTypeId === docTypeId),
     getPolicyById: (id: string) =>
       retentionPolicies.find((p) => p.id === id),
+    getDocTypeById: (id: string) => documentTypes.find((d) => d.id === id) ?? null,
   }), [documentTypes, categories, metadataFields, retentionPolicies]);
 }

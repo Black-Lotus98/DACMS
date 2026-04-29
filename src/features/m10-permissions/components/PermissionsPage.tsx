@@ -4,27 +4,30 @@ import { usePermissionsModule } from '../hooks';
 import { useAppDispatch } from '@/store/hooks';
 import { setUserRole, toggleRolePermission } from '../store/slice';
 import { ALL_ROLES, ROLE_LABELS, type RoleType } from '@/config/roles';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export function PermissionsPage() {
   const dispatch = useAppDispatch();
   const { users, roles, permissions, accessLogs } = usePermissionsModule();
+  const { local } = useParams<{ local: string }>();
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Users & Permissions</h1>
-        <p className="text-sm text-muted-foreground">بداية وحدة M10: إدارة المستخدمين، الأدوار، وAccess log.</p>
+        <p className="text-sm text-muted-foreground">M10: Manage users, role assignments, permission matrix, and access logs.</p>
       </div>
 
       <section className="rounded-xl border bg-background p-4">
-        <h2 className="font-semibold mb-3">المستخدمون</h2>
+        <h2 className="font-semibold mb-3">Users</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-muted-foreground">
-                <th className="text-start p-2">الاسم</th>
-                <th className="text-start p-2">البريد</th>
-                <th className="text-start p-2">الدور</th>
+                <th className="text-start p-2">Name</th>
+                <th className="text-start p-2">Email</th>
+                <th className="text-start p-2">Role</th>
                 <th className="text-start p-2">Status</th>
               </tr>
             </thead>
@@ -63,11 +66,16 @@ export function PermissionsPage() {
 
       <div className="grid md:grid-cols-2 gap-4">
         <section className="rounded-xl border bg-background p-4">
-          <h2 className="font-semibold mb-3">الأدوار</h2>
+          <h2 className="font-semibold mb-3">Roles</h2>
           <ul className="space-y-2 text-sm">
             {roles.map((r) => (
               <li key={r.id} className="flex justify-between border rounded-md p-2">
-                <span>{r.name}</span>
+                <div className="flex flex-col">
+                  <span>{r.name}</span>
+                  <Link href={`/${local}/permissions/role/${r.type}`} className="text-xs text-primary hover:underline mt-1">
+                    Open role view
+                  </Link>
+                </div>
                 <span className="text-muted-foreground">{r.permissions.length} permission</span>
               </li>
             ))}

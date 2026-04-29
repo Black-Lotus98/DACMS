@@ -6,17 +6,20 @@ import { useDataModelsModule } from '../hooks';
 import { ActionAfter, FieldType } from '../types';
 import { useAppDispatch } from '@/store/hooks';
 import { addCategory, addDocumentType, addMetadataField } from '../store/slice';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 const ACTION_LABELS: Record<ActionAfter, string> = {
   [ActionAfter.Destroy]: 'Destroy',
-  [ActionAfter.Transfer]: 'نقل',
-  [ActionAfter.Review]: 'مراجعة',
+  [ActionAfter.Transfer]: 'Transfer',
+  [ActionAfter.Review]: 'Review',
 };
 
 type Tab = 'types' | 'retention';
 
 export function DataModelsPage() {
   const dispatch = useAppDispatch();
+  const { local } = useParams<{ local: string }>();
   const [tab, setTab] = useState<Tab>('types');
   const [docTypeName, setDocTypeName] = useState('');
   const [docTypeCode, setDocTypeCode] = useState('');
@@ -78,7 +81,7 @@ export function DataModelsPage() {
         <Database className="w-6 h-6 text-primary-a0" />
         <div>
           <h1 className="text-2xl font-bold">Data Models</h1>
-          <p className="text-sm text-muted-foreground">Document types، هياكل الفئات، الحقول، وRetention policies</p>
+          <p className="text-sm text-muted-foreground">Document types, category structures, metadata fields, and retention policies.</p>
         </div>
       </div>
 
@@ -103,9 +106,9 @@ export function DataModelsPage() {
           <section className="rounded-xl border bg-background p-4 grid lg:grid-cols-3 gap-4">
             <div className="space-y-2">
               <h3 className="font-semibold text-sm">Add document type</h3>
-              <input value={docTypeName} onChange={(e)=>setDocTypeName(e.target.value)} placeholder="اسم Type" className="w-full h-9 rounded-md border px-3 text-sm" />
-              <input value={docTypeCode} onChange={(e)=>setDocTypeCode(e.target.value)} placeholder="الرمز (DOCX)" className="w-full h-9 rounded-md border px-3 text-sm font-mono" />
-              <button onClick={createDocType} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
+              <input value={docTypeName} onChange={(e)=>setDocTypeName(e.target.value)} placeholder="Type name" className="w-full h-9 rounded-md border px-3 text-sm" />
+              <input value={docTypeCode} onChange={(e)=>setDocTypeCode(e.target.value)} placeholder="Code (DOCX)" className="w-full h-9 rounded-md border px-3 text-sm font-mono" />
+              <button onClick={createDocType} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
             </div>
             <div className="space-y-2">
               <h3 className="font-semibold text-sm">Add category</h3>
@@ -113,7 +116,7 @@ export function DataModelsPage() {
                 {documentTypes.map((dt) => <option key={dt.id} value={dt.id}>{dt.name}</option>)}
               </select>
               <input value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} placeholder="Category name" className="w-full h-9 rounded-md border px-3 text-sm" />
-              <button onClick={createCategory} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
+              <button onClick={createCategory} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
             </div>
             <div className="space-y-2">
               <h3 className="font-semibold text-sm">Add metadata field</h3>
@@ -121,7 +124,7 @@ export function DataModelsPage() {
                 {Object.values(FieldType).map((ft)=><option key={ft} value={ft}>{ft}</option>)}
               </select>
               <input value={newFieldLabel} onChange={(e)=>setNewFieldLabel(e.target.value)} placeholder="Field label" className="w-full h-9 rounded-md border px-3 text-sm" />
-              <button onClick={createMetadataField} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
+              <button onClick={createMetadataField} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
             </div>
           </section>
           {documentTypes.map((dt) => {
@@ -134,14 +137,17 @@ export function DataModelsPage() {
                   <div>
                     <p className="font-semibold">{dt.name}</p>
                     <p className="text-xs font-mono text-muted-foreground">{dt.code}</p>
+                    <Link href={`/${local}/data-models/type/${dt.id}`} className="text-xs text-primary hover:underline mt-1 inline-block">
+                      Open type view
+                    </Link>
                   </div>
                   <span className="text-xs bg-muted px-2 py-1 rounded-full whitespace-nowrap">
                     {policy?.name ?? '—'}
                   </span>
                 </div>
                 <div className="flex gap-4 text-xs text-muted-foreground border-t pt-3">
-                  <span>{cats.length} فئة</span>
-                  <span>{fields.length} حقل بيانات</span>
+                  <span>{cats.length} categories</span>
+                  <span>{fields.length} metadata fields</span>
                 </div>
               </div>
             );
@@ -154,7 +160,7 @@ export function DataModelsPage() {
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/50">
               <tr>
-                <th className="text-start p-3 font-medium">السياسة</th>
+                <th className="text-start p-3 font-medium">Policy</th>
                 <th className="text-start p-3 font-medium">Retention period</th>
                 <th className="text-start p-3 font-medium">Action after period</th>
               </tr>
@@ -163,7 +169,7 @@ export function DataModelsPage() {
               {retentionPolicies.map((rp) => (
                 <tr key={rp.id} className="border-b last:border-b-0 hover:bg-muted/30">
                   <td className="p-3">{rp.name}</td>
-                  <td className="p-3">{rp.periodYears} سنة</td>
+                  <td className="p-3">{rp.periodYears} years</td>
                   <td className="p-3">
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
                       rp.actionAfter === ActionAfter.Destroy ? 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400'

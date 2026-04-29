@@ -4,10 +4,13 @@ import { useState } from 'react';
 import { useAppDispatch } from '@/store/hooks';
 import { useIntegrationModule } from '../hooks';
 import { addApiKey, addWebhook, setStatus, toggleApiKey, toggleWebhook } from '../store/slice';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export function IntegrationPage() {
   const dispatch = useAppDispatch();
   const { apiKeys, webhooks, status } = useIntegrationModule();
+  const { local } = useParams<{ local: string }>();
 
   const [keyName, setKeyName] = useState('');
   const [webhookUrl, setWebhookUrl] = useState('');
@@ -44,23 +47,28 @@ export function IntegrationPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Integration</h1>
-        <select
-          value={status}
-          onChange={(e) => dispatch(setStatus(e.target.value as 'connected' | 'degraded' | 'disconnected'))}
-          className="h-9 rounded-md border px-3 text-sm"
-        >
-          <option value="connected">connected</option>
-          <option value="degraded">degraded</option>
-          <option value="disconnected">disconnected</option>
-        </select>
+        <div className="flex items-center gap-2">
+          <Link href={`/${local}/integration/api-keys`} className="h-9 px-3 rounded-md border text-sm hover:bg-muted inline-flex items-center">
+            API keys view
+          </Link>
+          <select
+            value={status}
+            onChange={(e) => dispatch(setStatus(e.target.value as 'connected' | 'degraded' | 'disconnected'))}
+            className="h-9 rounded-md border px-3 text-sm"
+          >
+            <option value="connected">connected</option>
+            <option value="degraded">degraded</option>
+            <option value="disconnected">disconnected</option>
+          </select>
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-3">
         <section className="rounded-lg border p-3 space-y-3">
           <h2 className="font-semibold">API Keys</h2>
           <div className="flex gap-2">
-            <input value={keyName} onChange={(e) => setKeyName(e.target.value)} placeholder="اسم المفتاح" className="h-9 rounded-md border px-3 text-sm flex-1" />
-            <button onClick={createApiKey} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
+            <input value={keyName} onChange={(e) => setKeyName(e.target.value)} placeholder="key name" className="h-9 rounded-md border px-3 text-sm flex-1" />
+            <button onClick={createApiKey} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
           </div>
           {apiKeys.map((k) => (
             <div key={k.id} className="text-sm border rounded p-2 flex items-center justify-between gap-2">
@@ -81,7 +89,7 @@ export function IntegrationPage() {
             <input value={webhookEvent} onChange={(e) => setWebhookEvent(e.target.value)} placeholder="event key" className="h-9 rounded-md border px-3 text-sm" />
             <input value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder="https://..." className="h-9 rounded-md border px-3 text-sm" />
           </div>
-          <button onClick={createWebhook} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة webhook</button>
+          <button onClick={createWebhook} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add webhook</button>
           {webhooks.map((w) => (
             <div key={w.id} className="text-sm border rounded p-2 flex items-center justify-between gap-2">
               <div>

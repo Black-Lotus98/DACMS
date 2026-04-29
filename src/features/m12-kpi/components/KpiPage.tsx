@@ -2,10 +2,13 @@
 
 import { useMemo, useState } from 'react';
 import { useKpiModule } from '../hooks';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export function KpiPage() {
   const { kpis, mappings, getKpisForRole } = useKpiModule();
   const [selectedRole, setSelectedRole] = useState<string>('all');
+  const { local } = useParams<{ local: string }>();
 
   const roleOptions = useMemo(
     () => Array.from(new Set(mappings.map((m) => m.role))),
@@ -34,8 +37,15 @@ export function KpiPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Preview المؤشرات حسب الربط في وحدة M15.
+        Preview KPI values based on M15 role mappings.
       </p>
+      {selectedRole !== 'all' && (
+        <div>
+          <Link href={`/${local}/kpi/role/${selectedRole}`} className="text-sm text-primary hover:underline">
+            Open focused view for `{selectedRole}`
+          </Link>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-3 gap-3">
         {visibleKpis.map((k) => (

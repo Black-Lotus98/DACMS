@@ -8,6 +8,8 @@ export function useOrgModule() {
     organization,
     branches,
     departments,
+    getBranchById: (id: string) => branches.find((b) => b.id === id) ?? null,
+    getBranchDepts: (branchId: string) => departments.filter((d) => d.branchId === branchId),
     getRootDepts: (branchId: string) =>
       departments.filter((d) => d.branchId === branchId && !d.parentDeptId),
     getChildDepts: (parentId: string) =>

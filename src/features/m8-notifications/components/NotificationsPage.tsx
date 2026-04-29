@@ -3,10 +3,13 @@
 import { useNotificationsModule } from '../hooks';
 import { useAppDispatch } from '@/store/hooks';
 import { markAsRead, markAllAsRead, updatePreferences } from '../store/slice';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export function NotificationsPage() {
   const dispatch = useAppDispatch();
   const { items, unreadCount, preferences } = useNotificationsModule();
+  const { local } = useParams<{ local: string }>();
 
   function togglePreference(key: 'email' | 'inApp' | 'overdueAlerts') {
     dispatch(
@@ -21,10 +24,13 @@ export function NotificationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">التنبيهات وNotifications</h1>
-          <p className="text-sm text-muted-foreground">M8: سجل Notifications مع عدد غير المقروء.</p>
+          <h1 className="text-2xl font-bold">Notifications</h1>
+          <p className="text-sm text-muted-foreground">M8: Notification history and unread tracking.</p>
         </div>
         <div className="flex items-center gap-2">
+          <Link href={`/${local}/notifications/unread`} className="h-9 px-3 rounded-md border text-sm hover:bg-muted inline-flex items-center">
+            Unread list
+          </Link>
           <span className="text-sm bg-primary-a0 text-white px-3 py-1 rounded-full">Unread: {unreadCount}</span>
           <button
             onClick={() => dispatch(markAllAsRead())}
@@ -36,7 +42,7 @@ export function NotificationsPage() {
       </div>
 
       <section className="rounded-xl border bg-background p-4">
-        <h2 className="font-semibold mb-2">سجل Notifications</h2>
+        <h2 className="font-semibold mb-2">Notification history</h2>
         <ul className="space-y-2 text-sm">
           {items.map((n) => (
             <li key={n.id} className={`border rounded-md p-3 ${n.read ? 'opacity-70' : ''}`}>

@@ -7,12 +7,15 @@ import { ArchiveTree } from './ArchiveTree';
 import { useArchiveModule } from '../hooks';
 import { useAppDispatch } from '@/store/hooks';
 import { addRoom, addShelf, transferBox } from '../store/slice';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 type View = 'dashboard' | 'tree';
 
 export function ArchiveStructurePage() {
   const dispatch = useAppDispatch();
-  const { cabinets, boxes } = useArchiveModule();
+  const { rooms, cabinets, boxes } = useArchiveModule();
+  const { local } = useParams<{ local: string }>();
   const [view, setView] = useState<View>('dashboard');
   const [newRoomName, setNewRoomName] = useState('');
   const [newRoomCode, setNewRoomCode] = useState('');
@@ -62,7 +65,7 @@ export function ArchiveStructurePage() {
           <Warehouse className="w-6 h-6 text-primary-a0" />
           <div>
             <h1 className="text-2xl font-bold">Archive Structure</h1>
-            <p className="text-sm text-muted-foreground">إدارة القاعات والرفوف والصناديق</p>
+            <p className="text-sm text-muted-foreground">Manage rooms, shelves, and archive boxes.</p>
           </div>
         </div>
         <div className="flex gap-1 p-1 rounded-lg bg-muted">
@@ -88,7 +91,7 @@ export function ArchiveStructurePage() {
           <h2 className="font-semibold text-sm">Add room</h2>
           <input value={newRoomName} onChange={(e)=>setNewRoomName(e.target.value)} placeholder="Room name" className="w-full h-9 rounded-md border px-3 text-sm" />
           <input value={newRoomCode} onChange={(e)=>setNewRoomCode(e.target.value)} placeholder="Room code (R04)" className="w-full h-9 rounded-md border px-3 text-sm" />
-          <button onClick={createRoom} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
+          <button onClick={createRoom} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
         </div>
         <div className="space-y-2">
           <h2 className="font-semibold text-sm">Add shelf</h2>
@@ -96,7 +99,7 @@ export function ArchiveStructurePage() {
           <select value={newShelfCabinetId} onChange={(e)=>setNewShelfCabinetId(e.target.value)} className="w-full h-9 rounded-md border px-3 text-sm">
             {cabinets.map((cab) => <option key={cab.id} value={cab.id}>{cab.code}</option>)}
           </select>
-          <button onClick={createShelf} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">إضافة</button>
+          <button onClick={createShelf} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
         </div>
         <div className="space-y-2">
           <h2 className="font-semibold text-sm">Transfer box</h2>
@@ -104,7 +107,18 @@ export function ArchiveStructurePage() {
             {boxes.map((b) => <option key={b.id} value={b.id}>{b.code}</option>)}
           </select>
           <input value={transferShelfId} onChange={(e)=>setTransferShelfId(e.target.value)} placeholder="Target shelf id (sh-...)" className="w-full h-9 rounded-md border px-3 text-sm" />
-          <button onClick={transferSelectedBox} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">نقل</button>
+          <button onClick={transferSelectedBox} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Transfer</button>
+        </div>
+      </section>
+
+      <section className="rounded-xl border bg-background p-4">
+        <h2 className="font-semibold mb-2">Quick room views</h2>
+        <div className="flex flex-wrap gap-2">
+          {rooms.map((room) => (
+            <Link key={room.id} href={`/${local}/archive-structure/room/${room.id}`} className="text-sm text-primary hover:underline">
+              {room.name}
+            </Link>
+          ))}
         </div>
       </section>
 

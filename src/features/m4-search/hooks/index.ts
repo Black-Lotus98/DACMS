@@ -20,5 +20,6 @@ export function useSearchModule() {
       return required <= CLEARANCE_RANK[userClearance];
     }),
     savedQueries: state.savedQueries,
+    getSavedQueryById: (id: string) => state.savedQueries.find((q) => q.id === id) ?? null,
   }), [state, userClearance]);
 }

@@ -4,10 +4,13 @@ import { useMemo, useState } from 'react';
 import { useAppDispatch } from '@/store/hooks';
 import { useReportsModule } from '../hooks';
 import { setActiveReport } from '../store/slice';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export function ReportsPage() {
   const dispatch = useAppDispatch();
   const { definitions, activeReportId } = useReportsModule();
+  const { local } = useParams<{ local: string }>();
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [period, setPeriod] = useState<'week' | 'month' | 'quarter'>('month');
 
@@ -58,16 +61,23 @@ export function ReportsPage() {
 
       <div className="grid md:grid-cols-3 gap-3">
         {visibleReports.map((r) => (
-          <button
+          <div
             key={r.id}
-            onClick={() => dispatch(setActiveReport(r.id))}
-            className={`rounded-lg border p-3 text-start hover:bg-muted/40 ${
+            className={`rounded-lg border p-3 ${
               activeReportId === r.id ? 'border-primary-a0' : ''
             }`}
           >
-            <p className="font-medium">{r.name}</p>
-            <p className="text-xs text-muted-foreground">{r.category}</p>
-          </button>
+            <button
+              onClick={() => dispatch(setActiveReport(r.id))}
+              className="text-start hover:bg-muted/40 rounded-md w-full p-1"
+            >
+              <p className="font-medium">{r.name}</p>
+              <p className="text-xs text-muted-foreground">{r.category}</p>
+            </button>
+            <Link href={`/${local}/reports/${r.id}`} className="text-xs text-primary hover:underline mt-2 inline-block">
+              Open report view
+            </Link>
+          </div>
         ))}
       </div>
 

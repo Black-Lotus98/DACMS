@@ -6,5 +6,8 @@ export function useWorkflowModule() {
   return useMemo(() => ({
     workflows: state.definitions,
     executions: state.executions,
+    getWorkflowById: (id: string) => state.definitions.find((wf) => wf.id === id) ?? null,
+    getExecutionsByWorkflowId: (workflowId: string) =>
+      state.executions.filter((execution) => execution.workflowId === workflowId),
   }), [state]);
 }

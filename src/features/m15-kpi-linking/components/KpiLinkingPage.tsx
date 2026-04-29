@@ -4,11 +4,14 @@ import { useMemo, useState } from 'react';
 import { useKpiLinkingModule } from '../hooks';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { upsertMapping } from '../store/slice';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export function KpiLinkingPage() {
   const dispatch = useAppDispatch();
   const { mappings } = useKpiLinkingModule();
   const kpis = useAppSelector((s) => s.kpi.definitions);
+  const { local } = useParams<{ local: string }>();
   const [selectedRole, setSelectedRole] = useState(mappings[0]?.role ?? 'center_director');
 
   const activeMapping = useMemo(
@@ -35,11 +38,11 @@ export function KpiLinkingPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">ربط الهيكل بKPI Dashboard</h1>
+      <h1 className="text-2xl font-bold">KPI Role Linking</h1>
 
       <section className="rounded-lg border bg-background p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">الدور:</span>
+          <span className="text-sm text-muted-foreground">Role:</span>
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
@@ -51,6 +54,9 @@ export function KpiLinkingPage() {
               </option>
             ))}
           </select>
+          <Link href={`/${local}/kpi-linking/role/${selectedRole}`} className="text-sm text-primary hover:underline">
+            Open role view
+          </Link>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-2">
@@ -71,7 +77,7 @@ export function KpiLinkingPage() {
       </section>
 
       <section className="rounded-lg border bg-background p-4 space-y-2">
-        <h2 className="font-semibold text-sm">Status الحالية</h2>
+        <h2 className="font-semibold text-sm">Current mapping status</h2>
         {mappings.map((m) => (
           <div key={m.id} className="border rounded p-2 text-sm">
             <span className="font-medium">{m.role}</span>: {m.kpiKeys.join(', ')}
