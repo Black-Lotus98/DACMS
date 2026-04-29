@@ -45,11 +45,11 @@ const authSlice = createSlice({
 
 function mockUserName(role: RoleType): string {
   const names: Record<RoleType, string> = {
-    [RoleType.CenterDirector]: 'أحمد الزهراني',
-    [RoleType.ArchiveSupervisor]: 'فاطمة العمري',
-    [RoleType.ArchiveOfficer]: 'محمد القحطاني',
-    [RoleType.Admin]: 'سارة الغامدي',
-    [RoleType.Beneficiary]: 'خالد الشهري',
+    [RoleType.CenterDirector]: 'Ahmad Al-Zahrani',
+    [RoleType.ArchiveSupervisor]: 'Fatimah Al-Omari',
+    [RoleType.ArchiveOfficer]: 'Mohammad Al-Qahtani',
+    [RoleType.Admin]: 'Sarah Al-Ghamdi',
+    [RoleType.Beneficiary]: 'Khalid Al-Shahri',
   };
   return names[role];
 }

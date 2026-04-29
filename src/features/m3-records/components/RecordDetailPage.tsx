@@ -15,7 +15,7 @@ export function RecordDetailPage() {
     return (
       <div className="space-y-3">
         <p className="text-sm">Record not found.</p>
-        <Link href={`/${local}/records`} className="text-primary hover:underline">العودة إلى السجلات</Link>
+        <Link href={`/${local}/records`} className="text-primary hover:underline">Back to records</Link>
       </div>
     );
   }
@@ -23,7 +23,7 @@ export function RecordDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">تفاصيل السجل</h1>
+        <h1 className="text-2xl font-bold">Record details</h1>
         <Link href={`/${local}/records`} className="text-primary hover:underline">Back</Link>
       </div>
 
@@ -37,7 +37,7 @@ export function RecordDetailPage() {
       </section>
 
       <section className="rounded-xl border bg-background p-4">
-        <h2 className="font-semibold mb-2">سجل التحركات</h2>
+        <h2 className="font-semibold mb-2">Movement history</h2>
         {history.length === 0 ? (
           <p className="text-sm text-muted-foreground">No movement history yet.</p>
         ) : (

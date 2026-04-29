@@ -25,7 +25,7 @@ export function DestructionDetailPage() {
       <section className="rounded-xl border bg-background p-4 space-y-2 text-sm">
         <p><span className="text-muted-foreground">Reference:</span> <span className="font-mono">{request.recordRef}</span></p>
         <p><span className="text-muted-foreground">Reason:</span> {request.reason}</p>
-        <p><span className="text-muted-foreground">مستوى الApprove:</span> {request.approvalLevel}/3</p>
+        <p><span className="text-muted-foreground">Approval level:</span> {request.approvalLevel}/3</p>
         <p><span className="text-muted-foreground">Status:</span> {request.status}</p>
       </section>
 
@@ -35,14 +35,14 @@ export function DestructionDetailPage() {
           onClick={() => dispatch(advanceApprovalLevel(request.id))}
           className="h-9 px-3 rounded-md border text-sm disabled:opacity-40"
         >
-          Approve المرحلة التالية
+          Approve next stage
         </button>
         <button
           disabled={request.approvalLevel < 3 || request.status === DestructionStatus.Destroyed}
           onClick={() => dispatch(setDestructionStatus({ id: request.id, status: DestructionStatus.Approved }))}
           className="h-9 px-3 rounded-md border text-sm disabled:opacity-40"
         >
-          Approve نهائي
+          Final approve
         </button>
         <button
           disabled={request.approvalLevel < 3 || request.status !== DestructionStatus.Approved}

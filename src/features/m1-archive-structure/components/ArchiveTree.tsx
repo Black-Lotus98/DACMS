@@ -13,7 +13,7 @@ function ShelfRow({ shelf, boxes }: { shelf: ArchiveShelf; boxes: { shelfId: str
     <div className="flex items-center gap-3 py-1.5 px-3 text-xs" style={{ paddingInlineStart: '80px' }}>
       <span className="font-mono text-muted-foreground w-28 shrink-0">{shelf.code}</span>
       <div className="flex-1"><OccupancyBar pct={pct} showLabel={false} /></div>
-      <span className="text-muted-foreground shrink-0">{boxCount} صندوق</span>
+      <span className="text-muted-foreground shrink-0">{boxCount} boxes</span>
     </div>
   );
 }
@@ -31,7 +31,7 @@ function CabinetNode({ cab, shelves, boxes }: { cab: ArchiveCabinet; shelves: Ar
         {open ? <ChevronDown className="w-3 h-3 shrink-0" /> : <ChevronRight className="w-3 h-3 shrink-0" />}
         <Box className="w-3 h-3 text-muted-foreground shrink-0" />
         <span className="font-mono">{cab.code}</span>
-        <span className="text-muted-foreground">({cabShelves.length} رفوف)</span>
+        <span className="text-muted-foreground">({cabShelves.length} shelves)</span>
       </button>
       {open && cabShelves.map((sh) => <ShelfRow key={sh.id} shelf={sh} boxes={boxes} />)}
     </div>
@@ -51,7 +51,7 @@ function RowNode({ row, cabinets, shelves, boxes }: { row: ArchiveRow; cabinets:
         {open ? <ChevronDown className="w-3 h-3 shrink-0" /> : <ChevronRight className="w-3 h-3 shrink-0" />}
         <Layers className="w-3 h-3 text-muted-foreground shrink-0" />
         <span className="font-mono">{row.code}</span>
-        <span className="text-muted-foreground">({rowCabs.length} خزانات)</span>
+        <span className="text-muted-foreground">({rowCabs.length} cabinets)</span>
       </button>
       {open && rowCabs.map((cab) => (
         <CabinetNode key={cab.id} cab={cab} shelves={shelves} boxes={boxes} />
@@ -67,7 +67,11 @@ export function ArchiveTree() {
   const toggle = (id: string) =>
     setOpenRooms((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
 

@@ -685,5 +685,6 @@ All 15 module handler files follow the same pattern. Switching to a real backend
 - **2026-04-29 — M5 print-job subroute pass:** Added `/barcodes/print-job/:id` route for focused print queue item management and wired entry links from the barcodes page.
 - **2026-04-29 — M14 workflow-detail subroute pass:** Added `/workflow/:id` route for focused workflow definition/execution views and wired entry links from the workflow definitions list.
 - **2026-04-29 — M15 role-linking subroute pass:** Added `/kpi-linking/role/:role` route for focused role-to-KPI mapping details and wired entry links from the KPI linking screen.
+- **2026-04-29 — Route sanity + UI language cleanup pass:** Verified all newly added private routes are present/reachable and normalized remaining mixed-language UI strings in active feature components to English (seed data left unchanged).
 
 DACMS Frontend Execution Plan | Ministry of Industry & Trade | Confidential | April 2026
