@@ -12,7 +12,7 @@ Document & Archive Centre Management System
 | **Scope**       | 15 Modules - UI Prototype (No Backend)               |
 | **Build Order** | Layer-based: Foundation → Core → Lifecycle → Insight |
 | **Date**        | April 2026                                           |
-| **Status**      | Phase 0 complete; ready to start Phase 1            |
+| **Status**      | All phases complete (Phase 0 → Phase 4)             |
 
 # **0. Architecture Snapshot (Quick Reference)**
 
@@ -198,7 +198,7 @@ The hybrid structure extends the existing DACMS project. App Router page files s
 # **3\. Global Setup Tasks (Phase 0)**
 
 Complete all Phase 0 tasks before writing any module code. These form the foundation every feature depends on.  
-**Update (2026-04-29): Phase 0 is complete.**
+**Update (2026-04-29): Phase 0 complete. Phase 1 complete. Phase 2 complete. Phase 3 complete. Phase 4 complete.**
 
 ## **3.1 Packages to Install**
 
@@ -303,10 +303,10 @@ Follows SRS §3.3 Module Layering and §10.3 Module Initialisation Order. No mod
 | **Phase** | **Modules**       | **Description**                                                     | **SRS Init Order** | **Blocked By** |
 | --------- | ----------------- | ------------------------------------------------------------------- | ------------------ | -------------- |
 | Phase 0 ✅ | Global Setup      | Store, MSW, auth, nav config, layout, role switcher, mock login     | Pre-module         | Nothing        |
-| Phase 1   | M10, M13, M1, M2  | Foundation: Permissions, Org Structure, Archive Hierarchy, Metadata | 1 → 2 → 3 → 4      | None (Phase 0 done)        |
-| Phase 2   | M3, M4, M5, M14   | Core Operations: Records, Search, Barcodes, Workflow Engine         | 5 → 6 → 7 → 8      | Phase 1        |
-| Phase 3   | M6, M7, M8        | Lifecycle: Lending, Destruction & Migration, Notifications          | 9 → 10 → 11        | Phase 2        |
-| Phase 4   | M9, M11, M12, M15 | Insight & Governance: Reports, Integration, KPIs, KPI Linking       | 12 → 13 → 14 → 15  | Phase 3        |
+| Phase 1 ✅ | M10, M13, M1, M2  | Foundation: Permissions, Org Structure, Archive Hierarchy, Metadata | 1 → 2 → 3 → 4      | None           |
+| Phase 2 ✅ | M3, M4, M5, M14   | Core Operations: Records, Search, Barcodes, Workflow Engine         | 5 → 6 → 7 → 8      | None           |
+| Phase 3 ✅ | M6, M7, M8        | Lifecycle: Lending, Destruction & Migration, Notifications          | 9 → 10 → 11        | None           |
+| Phase 4 ✅ | M9, M11, M12, M15 | Insight & Governance: Reports, Integration, KPIs, KPI Linking       | 12 → 13 → 14 → 15  | None           |
 
 # **5\. Module-by-Module Breakdown**
 
@@ -644,9 +644,30 @@ All 15 module handler files follow the same pattern. Switching to a real backend
 | **Phase**                    | **Modules**       | **Deliverables**                                                                                                                                                                    | **Exit Criteria**                                                                                                                                   |
 | ---------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Phase 0 Global Setup ✅      | -                 | Redux store (all 15 slices), MSW setup, mock login page (5 role cards), shared layout, Sidebar, Header, RoleBadge, navigation config                                                | Role switching works. All 15 route pages load without errors. Sidebar filters by role correctly.                                                    |
-| Phase 1 Foundation           | M10, M13, M1, M2  | Users, roles, permission matrix, org tree, archive hierarchy tree, occupancy dashboard, document types, category trees, metadata fields, retention policies                         | Admin can create a user, assign a role, create a department, register a room, and define a document type with retention policy.                     |
-| Phase 2 Core Operations      | M3, M4, M5, M14   | Record registration (dynamic form), record detail + history timeline, advanced search, barcode scan, batch label printing, barcode viewer, workflow definitions + execution tracker | Officer can register a record, assign it to a box, print its barcode, find it via advanced search, and view its location history.                   |
-| Phase 3 Lifecycle            | M6, M7, M8        | Full lending flow (submit → approve → dispatch → return), destruction watchlist + 3-level approval chain + certificate, notification bell + history                                 | Supervisor can approve a lending request. Director can approve a destruction batch. Overdue alerts appear. Notification bell shows unread count.    |
-| Phase 4 Insight & Governance | M9, M11, M12, M15 | 8 report types with Recharts charts, integration status + API key management, role-specific KPI dashboards with trend charts, KPI mapping editor with drag-reorder                  | Director sees governance KPI dashboard. Supervisor sees operational KPIs. Reports render with charts. KPI mapping editor saves role configurations. |
+| Phase 1 Foundation ✅        | M10, M13, M1, M2  | Users, roles, permission matrix, org tree, archive hierarchy tree, occupancy dashboard, document types, category trees, metadata fields, retention policies                         | Admin can create a user, assign a role, create a department, register a room, and define a document type with retention policy.                     |
+| Phase 2 Core Operations ✅   | M3, M4, M5, M14   | Record registration (dynamic form), record detail + history timeline, advanced search, barcode scan, batch label printing, barcode viewer, workflow definitions + execution tracker | Officer can register a record, assign it to a box, print its barcode, find it via advanced search, and view its location history.                   |
+| Phase 3 Lifecycle ✅         | M6, M7, M8        | Full lending flow (submit → approve → dispatch → return), destruction watchlist + 3-level approval chain + certificate, notification bell + history                                 | Supervisor can approve a lending request. Director can approve a destruction batch. Overdue alerts appear. Notification bell shows unread count.    |
+| Phase 4 Insight & Governance ✅ | M9, M11, M12, M15 | 8 report types with Recharts charts, integration status + API key management, role-specific KPI dashboards with trend charts, KPI mapping editor with drag-reorder                  | Director sees governance KPI dashboard. Supervisor sees operational KPIs. Reports render with charts. KPI mapping editor saves role configurations. |
+
+## **9\. Post-Phase Enhancement Log**
+
+- **2026-04-29 — M3 depth pass:** Added `/records/new` and `/records/:id` flows (create form + detail view with history).
+- **2026-04-29 — M6 depth pass:** Added `/lending/new` and `/lending/:id` flows (request form + detail view with status transitions: approve/deliver/return).
+- **2026-04-29 — M7 depth pass:** Added `/destruction/new` and `/destruction/:id` flows (new request form + detail view + approval chain actions).
+- **2026-04-29 — M8 depth pass:** Added interactive notification actions (single read + mark all read) and editable notification preferences toggles.
+- **2026-04-29 — M4 depth pass:** Added advanced search controls (query + secrecy filter), apply/reset flow, save query action, and saved-query apply buttons.
+- **2026-04-29 — M5 depth pass:** Added real barcode rendering with `bwip-js` preview and interactive print queue status transitions.
+- **2026-04-29 — M10 depth pass:** Added interactive role reassignment per user and editable permission matrix toggles per role.
+- **2026-04-29 — M1 depth pass:** Added quick create actions for rooms and shelves, plus a transfer-box action in archive structure controls.
+- **2026-04-29 — M2 depth pass:** Added create flows for document types, categories, and metadata fields with interactive form controls in data models page.
+- **2026-04-29 — M11 depth pass:** Added create/toggle flows for API keys and webhooks plus integration status selector.
+- **2026-04-29 — M12 depth pass:** Added role-based KPI filtering that reads mapping definitions from M15 and renders KPI cards by selected role.
+- **2026-04-29 — M15 depth pass:** Added editable role-to-KPI mapping UI with checkbox toggles and live mapping state updates.
+- **2026-04-29 — M14 depth pass:** Added workflow creation UI, publish action (single published version behavior), and execution step advancement controls.
+- **2026-04-29 — M6/M7 rule hardening pass:** Enforced valid lending status transitions + overdue refresh + due-date validation, and enforced 3-level destruction approval chain before final destroy action.
+- **2026-04-29 — M3/M4 clearance hardening pass:** Added clearance-based visibility filtering so records/search results respect active user clearance level.
+- **2026-04-29 — M9 depth pass:** Added report category/period filters, active report switching, and report preview panel behavior.
+- **2026-04-29 — M13 depth pass:** Added branch/department creation controls and responsible-email assignment flow for departments.
+- **2026-04-29 — Testing foundation pass:** Added Vitest setup + test scripts and reducer tests for M3/M6/M7 business rules; test suite currently passing.
 
 DACMS Frontend Execution Plan | Ministry of Industry & Trade | Confidential | April 2026
