@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { detectLocale, matchesPath, stripLocale } from '../middleware-utils';
 import type { Locale } from '@/config/i18n';
 

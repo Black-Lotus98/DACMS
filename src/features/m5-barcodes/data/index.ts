@@ -1,12 +1,80 @@
-import { BarcodeType, PrintStatus, type BarcodeLabel, type PrintJob } from '../types';
+import { BarcodeType, EntityType, PrintStatus, type BarcodeLabel, type PrintJob } from '../types';
 
 export const barcodeLabelsSeed: BarcodeLabel[] = [
-  { id: 'bl1', entityId: 'rec1', code: 'REC-2026-00001', type: BarcodeType.Code128, active: true },
-  { id: 'bl2', entityId: 'rec2', code: 'REC-2026-00002', type: BarcodeType.Code128, active: true },
-  { id: 'bl3', entityId: 'rm1', code: 'R01', type: BarcodeType.QR, active: true },
+  {
+    id:          'bl1',
+    entityType:  EntityType.Record,
+    entityId:    'rec1',
+    barcodeVal:  'REC-2026-00001',
+    type:        BarcodeType.Code128,
+    generatedAt: '2026-01-20T09:00:00Z',
+    printedAt:   '2026-01-20T09:30:00Z',
+    isActive:    true,
+  },
+  {
+    id:          'bl2',
+    entityType:  EntityType.Record,
+    entityId:    'rec2',
+    barcodeVal:  'REC-2026-00002',
+    type:        BarcodeType.Code128,
+    generatedAt: '2026-02-05T11:00:00Z',
+    printedAt:   '2026-02-05T11:15:00Z',
+    isActive:    true,
+  },
+  {
+    id:          'bl3',
+    entityType:  EntityType.Room,
+    entityId:    'rm1',
+    barcodeVal:  'ROOM-R01',
+    type:        BarcodeType.QR,
+    generatedAt: '2026-01-01T08:00:00Z',
+    isActive:    true,
+  },
+  {
+    id:          'bl4',
+    entityType:  EntityType.Shelf,
+    entityId:    'sh1',
+    barcodeVal:  'SHELF-SH1',
+    type:        BarcodeType.Code128,
+    generatedAt: '2026-01-05T08:00:00Z',
+    isActive:    true,
+  },
+  {
+    id:          'bl5',
+    entityType:  EntityType.Box,
+    entityId:    'bx1',
+    barcodeVal:  'BOX-BX1',
+    type:        BarcodeType.QR,
+    generatedAt: '2026-01-10T08:00:00Z',
+    isActive:    true,
+  },
+  {
+    id:          'bl1-old',
+    entityType:  EntityType.Record,
+    entityId:    'rec1',
+    barcodeVal:  'REC-2025-00001-REPLACED',
+    type:        BarcodeType.Code128,
+    generatedAt: '2025-06-01T09:00:00Z',
+    printedAt:   '2025-06-01T09:30:00Z',
+    isActive:    false,
+  },
 ];
 
 export const printJobsSeed: PrintJob[] = [
-  { id: 'pj1', title: 'Batch Print April', count: 24, status: PrintStatus.Done },
-  { id: 'pj2', title: 'Records Queue', count: 8, status: PrintStatus.Printing },
+  {
+    id:          'pj1',
+    createdBy:   'user1',
+    labelIds:    ['bl1', 'bl2', 'bl3'],
+    status:      PrintStatus.Done,
+    printFormat: 'A4-3x8',
+    queuedAt:    '2026-04-01T08:00:00Z',
+  },
+  {
+    id:          'pj2',
+    createdBy:   'user1',
+    labelIds:    ['bl4', 'bl5'],
+    status:      PrintStatus.Printing,
+    printFormat: 'Label-62mm',
+    queuedAt:    '2026-04-28T10:00:00Z',
+  },
 ];
