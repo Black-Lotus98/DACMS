@@ -33,8 +33,8 @@ export function LendingFormPage() {
       setError('Record reference does not exist.');
       return;
     }
-    if (record.status === RecordStatus.Draft) {
-      setError('Draft records cannot be requested for lending.');
+    if (record.status === RecordStatus.Destroyed || record.status === RecordStatus.Migrated) {
+      setError('Destroyed or migrated records cannot be requested for lending.');
       return;
     }
 

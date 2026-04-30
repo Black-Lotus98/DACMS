@@ -4,46 +4,59 @@ import { ClearanceLevel } from '@/config/roles';
 import { SecrecyLevel } from '../types';
 
 const CLEARANCE_RANK: Record<ClearanceLevel, number> = {
-  [ClearanceLevel.Public]: 0,
-  [ClearanceLevel.Restricted]: 1,
+  [ClearanceLevel.Public]:      0,
+  [ClearanceLevel.Restricted]:  1,
   [ClearanceLevel.Confidential]: 2,
-  [ClearanceLevel.TopSecret]: 3,
+  [ClearanceLevel.TopSecret]:   3,
 };
 
 const SECRECY_RANK: Record<SecrecyLevel, number> = {
-  [SecrecyLevel.Public]: 0,
-  [SecrecyLevel.Restricted]: 1,
-  [SecrecyLevel.Confidential]: 2,
+  [SecrecyLevel.Public]:    0,
+  [SecrecyLevel.Internal]:  1,
+  [SecrecyLevel.Secret]:    2,
   [SecrecyLevel.TopSecret]: 3,
 };
 
 export function useRecordsModule() {
   const state = useAppSelector((s) => s.records);
   const userClearance = useAppSelector((s) => s.auth.clearanceLevel);
-  return useMemo(() => ({
-    records: state.items.filter((r) => {
+
+  return useMemo(() => {
+    const canSee = (secrecy: SecrecyLevel) => {
       if (!userClearance) return false;
-      const required = SECRECY_RANK[r.secrecy] ?? 0;
-      return required <= CLEARANCE_RANK[userClearance];
-    }),
-    history: state.locationHistory.filter((h) => {
-      const rec = state.items.find((item) => item.id === h.recordId);
-      if (!rec || !userClearance) return false;
-      const required = SECRECY_RANK[rec.secrecy] ?? 0;
-      return required <= CLEARANCE_RANK[userClearance];
-    }),
-    getRecordById: (id: string) =>
-      state.items.find((r) => {
-        if (r.id !== id || !userClearance) return false;
-        const required = SECRECY_RANK[r.secrecy] ?? 0;
-        return required <= CLEARANCE_RANK[userClearance];
+      return SECRECY_RANK[secrecy] <= CLEARANCE_RANK[userClearance];
+    };
+
+    const visibleRecords = state.items.filter((r) => canSee(r.secrecy));
+
+    return {
+      records: visibleRecords,
+      files: state.files,
+
+      history: state.locationHistory.filter((h) => {
+        const rec = state.items.find((item) => item.id === h.recordId);
+        return rec ? canSee(rec.secrecy) : false;
       }),
-    getHistoryForRecord: (recordId: string) => {
-      const rec = state.items.find((item) => item.id === recordId);
-      if (!rec || !userClearance) return [];
-      const required = SECRECY_RANK[rec.secrecy] ?? 0;
-      if (required > CLEARANCE_RANK[userClearance]) return [];
-      return state.locationHistory.filter((h) => h.recordId === recordId);
-    },
-  }), [state, userClearance]);
+
+      getRecordById: (id: string) => {
+        const rec = state.items.find((r) => r.id === id);
+        return rec && canSee(rec.secrecy) ? rec : undefined;
+      },
+
+      getHistoryForRecord: (recordId: string) => {
+        const rec = state.items.find((item) => item.id === recordId);
+        if (!rec || !canSee(rec.secrecy)) return [];
+        return state.locationHistory.filter((h) => h.recordId === recordId);
+      },
+
+      getFilesForRecord: (recordId: string) =>
+        state.files.filter((f) => f.recordId === recordId),
+
+      getRecordsByBox: (boxId: string) =>
+        visibleRecords.filter((r) => r.boxId === boxId),
+
+      getRecordsByDocType: (docTypeId: string) =>
+        visibleRecords.filter((r) => r.docTypeId === docTypeId),
+    };
+  }, [state, userClearance]);
 }

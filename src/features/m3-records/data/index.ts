@@ -1,11 +1,88 @@
-import { RecordStatus, SecrecyLevel, type RecordItem, type LocationHistory } from '../types';
+import { RecordStatus, SecrecyLevel, type RecordItem, type LocationHistory, type RecordFile } from '../types';
 
 export const recordsSeed: RecordItem[] = [
-  { id: 'rec1', refNo: 'REC-2026-00001', title: 'Review Committee Minutes', docType: 'CORR', boxCode: 'R01-RW01-CB01-SH1-BX1', status: RecordStatus.Archived, secrecy: SecrecyLevel.Confidential },
-  { id: 'rec2', refNo: 'REC-2026-00002', title: 'Service Supply Contract', docType: 'CONT', boxCode: 'R01-RW02-CB01-SH2-BX3', status: RecordStatus.Archived, secrecy: SecrecyLevel.Restricted },
-  { id: 'rec3', refNo: 'REC-2026-00003', title: 'Quarterly Financial Report', docType: 'FINR', boxCode: 'R02-RW03-CB02-SH1-BX4', status: RecordStatus.Moved, secrecy: SecrecyLevel.TopSecret },
+  {
+    id: 'rec1',
+    refNo: 'REC-2026-00001',
+    titleAr: 'محضر اجتماع لجنة المراجعة',
+    titleEn: 'Review Committee Minutes',
+    docTypeId: 'dt1',
+    categoryId: 'cat1',
+    boxId: 'bx1',
+    shelfId: 'sh1',
+    status: RecordStatus.Archived,
+    secrecy: SecrecyLevel.Internal,
+    issueDate: '2026-01-15',
+    archiveDate: '2026-01-20',
+    retentionEnd: '2031-01-20',
+    metadata: { subject: 'Quarterly review' },
+    createdBy: 'user1',
+  },
+  {
+    id: 'rec2',
+    refNo: 'REC-2026-00002',
+    titleAr: 'عقد توريد خدمات',
+    titleEn: 'Service Supply Contract',
+    docTypeId: 'dt2',
+    categoryId: 'cat2',
+    boxId: 'bx3',
+    shelfId: 'sh2',
+    status: RecordStatus.Active,
+    secrecy: SecrecyLevel.Secret,
+    issueDate: '2026-02-01',
+    archiveDate: '2026-02-05',
+    retentionEnd: '2036-02-05',
+    metadata: { vendor: 'TechCorp', value: '50000' },
+    createdBy: 'user1',
+  },
+  {
+    id: 'rec3',
+    refNo: 'REC-2026-00003',
+    titleAr: 'تقرير مالي ربع سنوي',
+    titleEn: 'Quarterly Financial Report',
+    docTypeId: 'dt3',
+    categoryId: 'cat3',
+    boxId: 'bx4',
+    shelfId: 'sh3',
+    status: RecordStatus.Archived,
+    secrecy: SecrecyLevel.TopSecret,
+    issueDate: '2026-03-31',
+    archiveDate: '2026-04-05',
+    retentionEnd: '2041-04-05',
+    metadata: { quarter: 'Q1', year: '2026' },
+    createdBy: 'user2',
+  },
 ];
 
 export const locationHistorySeed: LocationHistory[] = [
-  { id: 'lh1', recordId: 'rec3', fromBox: 'R02-RW01-CB01-SH1-BX1', toBox: 'R02-RW03-CB02-SH1-BX4', movedAt: '2026-04-20T10:00:00Z' },
+  {
+    id: 'lh1',
+    recordId: 'rec3',
+    fromBox: 'bx1',
+    toBox: 'bx4',
+    movedAt: '2026-04-20T10:00:00Z',
+    movedBy: 'user1',
+    reason: 'Transferred to long-term storage room',
+  },
+];
+
+export const recordFilesSeed: RecordFile[] = [
+  {
+    id: 'rf1',
+    recordId: 'rec1',
+    fileName: 'committee-minutes-q1.pdf',
+    fileType: 'application/pdf',
+    fileUrl: '/files/committee-minutes-q1.pdf',
+    uploadedAt: '2026-01-20T09:00:00Z',
+    uploadedBy: 'user1',
+  },
+  {
+    id: 'rf2',
+    recordId: 'rec2',
+    fileName: 'supply-contract.pdf',
+    fileType: 'application/pdf',
+    fileUrl: '/files/supply-contract.pdf',
+    uploadedAt: '2026-02-05T11:00:00Z',
+    uploadedBy: 'user1',
+  },
 ];

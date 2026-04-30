@@ -1,51 +1,63 @@
 import { ActionAfter, FieldType } from '../types';
-import type { DocumentCategory, DocumentType, MetadataField, RetentionPolicy } from '../types';
+import type { DocumentCategory, DocumentType, MetadataField, OptionSet, RetentionPolicy } from '../types';
 
-export const retentionPoliciesSeed: RetentionPolicy[] = [
-  { id: 'rp1', name: 'سياسة 5 سنوات — Destroy', periodYears: 5, actionAfter: ActionAfter.Destroy },
-  { id: 'rp2', name: '10-Year Policy — Review', periodYears: 10, actionAfter: ActionAfter.Review },
-  { id: 'rp3', name: '25-Year Policy — Transfer', periodYears: 25, actionAfter: ActionAfter.Transfer },
-  { id: 'rp4', name: 'سياسة 7 سنوات — Destroy', periodYears: 7, actionAfter: ActionAfter.Destroy },
-  { id: 'rp5', name: 'Save دائم', periodYears: 99, actionAfter: ActionAfter.Review },
+export const optionSetsSeed: OptionSet[] = [
+  { id: 'os1', nameAr: 'مستوى السرية', nameEn: 'Secrecy Level', options: ['عام', 'داخلي', 'سري', 'سري للغاية'] },
+  { id: 'os2', nameAr: 'نوع الخدمة', nameEn: 'Service Type', options: ['License', 'Registration', 'Inquiry', 'Complaint'] },
+  { id: 'os3', nameAr: 'حالة العقد', nameEn: 'Contract Status', options: ['Active', 'Expired', 'Terminated'] },
 ];
 
 export const documentTypesSeed: DocumentType[] = [
-  { id: 'dt1', name: 'مراسلات Official', code: 'CORR', retentionPolicyId: 'rp2' },
-  { id: 'dt2', name: 'Contracts & Agreements', code: 'CONT', retentionPolicyId: 'rp3' },
-  { id: 'dt3', name: 'Financial Reports', code: 'FINR', retentionPolicyId: 'rp1' },
-  { id: 'dt4', name: 'Administrative Decisions', code: 'ADMD', retentionPolicyId: 'rp5' },
-  { id: 'dt5', name: 'Service Requests', code: 'SREQ', retentionPolicyId: 'rp4' },
+  { id: 'dt1', nameAr: 'المراسلات الرسمية',    nameEn: 'Official Correspondence',   code: 'CORR', isActive: true },
+  { id: 'dt2', nameAr: 'العقود والاتفاقيات',    nameEn: 'Contracts & Agreements',    code: 'CONT', isActive: true },
+  { id: 'dt3', nameAr: 'التقارير المالية',       nameEn: 'Financial Reports',         code: 'FINR', isActive: true },
+  { id: 'dt4', nameAr: 'القرارات الإدارية',      nameEn: 'Administrative Decisions',  code: 'ADMD', isActive: true },
+  { id: 'dt5', nameAr: 'طلبات الخدمة',           nameEn: 'Service Requests',          code: 'SREQ', isActive: true },
+];
+
+export const retentionPoliciesSeed: RetentionPolicy[] = [
+  { id: 'rp1', docTypeId: 'dt3', periodYears: 5,  actionAfter: ActionAfter.Destroy, legalRef: 'MOT-RET-2025 §3.1' },
+  { id: 'rp2', docTypeId: 'dt1', periodYears: 10, actionAfter: ActionAfter.Review  },
+  { id: 'rp3', docTypeId: 'dt2', periodYears: 25, actionAfter: ActionAfter.Migrate, legalRef: 'MOT-RET-2025 §5.2' },
+  { id: 'rp4', docTypeId: 'dt5', periodYears: 7,  actionAfter: ActionAfter.Destroy },
+  { id: 'rp5', docTypeId: 'dt4', periodYears: 99, actionAfter: ActionAfter.Review  },
 ];
 
 export const categoriesSeed: DocumentCategory[] = [
-  // dt1 tree
-  { id: 'c1', name: 'Outgoing Correspondence', docTypeId: 'dt1', level: 1 },
-  { id: 'c2', name: 'Incoming Correspondence', docTypeId: 'dt1', level: 1 },
-  { id: 'c3', name: 'Official', docTypeId: 'dt1', parentId: 'c1', level: 2 },
-  { id: 'c4', name: 'Confidential', docTypeId: 'dt1', parentId: 'c1', level: 2 },
-  // dt2 tree
-  { id: 'c5', name: 'Internal Contracts', docTypeId: 'dt2', level: 1 },
-  { id: 'c6', name: 'External Contracts', docTypeId: 'dt2', level: 1 },
-  { id: 'c7', name: 'Maintenance Contracts', docTypeId: 'dt2', parentId: 'c5', level: 2 },
-  // dt3 tree
-  { id: 'c8', name: 'Quarterly Reports', docTypeId: 'dt3', level: 1 },
-  { id: 'c9', name: 'Annual Reports', docTypeId: 'dt3', level: 1 },
+  // dt1 — Official Correspondence
+  { id: 'c1', nameAr: 'مراسلات صادرة',    nameEn: 'Outgoing Correspondence', code: 'CORR-OUT', docTypeId: 'dt1', level: 1 },
+  { id: 'c2', nameAr: 'مراسلات واردة',    nameEn: 'Incoming Correspondence', code: 'CORR-IN',  docTypeId: 'dt1', level: 1 },
+  { id: 'c3', nameAr: 'رسمية',            nameEn: 'Official',                code: 'CORR-OUT-OF', docTypeId: 'dt1', parentId: 'c1', level: 2 },
+  { id: 'c4', nameAr: 'سرية',             nameEn: 'Confidential',            code: 'CORR-OUT-CF', docTypeId: 'dt1', parentId: 'c1', level: 2 },
+  // dt2 — Contracts
+  { id: 'c5', nameAr: 'عقود داخلية',      nameEn: 'Internal Contracts',      code: 'CONT-INT', docTypeId: 'dt2', level: 1 },
+  { id: 'c6', nameAr: 'عقود خارجية',      nameEn: 'External Contracts',      code: 'CONT-EXT', docTypeId: 'dt2', level: 1 },
+  { id: 'c7', nameAr: 'عقود صيانة',       nameEn: 'Maintenance Contracts',   code: 'CONT-INT-MT', docTypeId: 'dt2', parentId: 'c5', level: 2 },
+  // dt3 — Financial Reports
+  { id: 'c8', nameAr: 'تقارير ربع سنوية', nameEn: 'Quarterly Reports',       code: 'FINR-Q',  docTypeId: 'dt3', level: 1 },
+  { id: 'c9', nameAr: 'تقارير سنوية',     nameEn: 'Annual Reports',          code: 'FINR-A',  docTypeId: 'dt3', level: 1 },
 ];
 
 export const metadataFieldsSeed: MetadataField[] = [
-  { id: 'mf1', label: 'رقم Reference', fieldType: FieldType.Text, required: true, docTypeId: 'dt1' },
-  { id: 'mf2', label: 'Issue Date', fieldType: FieldType.Date, required: true, docTypeId: 'dt1' },
-  { id: 'mf3', label: 'مستوى Secrecy', fieldType: FieldType.Select, required: true, docTypeId: 'dt1', options: ['عام', 'سري', 'سري للغاية'] },
-  { id: 'mf4', label: 'Department المرسلة', fieldType: FieldType.Text, required: true, docTypeId: 'dt1' },
-  { id: 'mf5', label: 'Contract Number', fieldType: FieldType.Text, required: true, docTypeId: 'dt2' },
-  { id: 'mf6', label: 'Contract Start Date', fieldType: FieldType.Date, required: true, docTypeId: 'dt2' },
-  { id: 'mf7', label: 'Contract End Date', fieldType: FieldType.Date, required: true, docTypeId: 'dt2' },
-  { id: 'mf8', label: 'Contract Value', fieldType: FieldType.Number, required: false, docTypeId: 'dt2' },
-  { id: 'mf9', label: 'Fiscal Year', fieldType: FieldType.Text, required: true, docTypeId: 'dt3' },
-  { id: 'mf10', label: 'Responsible Department', fieldType: FieldType.Text, required: true, docTypeId: 'dt3' },
-  { id: 'mf11', label: 'Decision Number', fieldType: FieldType.Text, required: true, docTypeId: 'dt4' },
-  { id: 'mf12', label: 'Decision Date', fieldType: FieldType.Date, required: true, docTypeId: 'dt4' },
-  { id: 'mf13', label: 'Service Type', fieldType: FieldType.Select, required: true, docTypeId: 'dt5', options: ['License', 'Registration', 'Inquiry'] },
-  { id: 'mf14', label: 'Applicant Name', fieldType: FieldType.Text, required: true, docTypeId: 'dt5' },
-  { id: 'mf15', label: 'ID Number', fieldType: FieldType.Text, required: true, docTypeId: 'dt5' },
+  // dt1
+  { id: 'mf1',  fieldKey: 'ref_number',     labelAr: 'رقم المرجع',         labelEn: 'Reference Number',      fieldType: FieldType.Text,        isRequired: true,  docTypeId: 'dt1' },
+  { id: 'mf2',  fieldKey: 'issue_date',     labelAr: 'تاريخ الإصدار',      labelEn: 'Issue Date',            fieldType: FieldType.Date,        isRequired: true,  docTypeId: 'dt1' },
+  { id: 'mf3',  fieldKey: 'secrecy_level',  labelAr: 'مستوى السرية',       labelEn: 'Secrecy Level',         fieldType: FieldType.Dropdown,    isRequired: true,  docTypeId: 'dt1', optionSetId: 'os1' },
+  { id: 'mf4',  fieldKey: 'sender_dept',    labelAr: 'الجهة المرسلة',      labelEn: 'Sender Department',     fieldType: FieldType.Text,        isRequired: true,  docTypeId: 'dt1' },
+  // dt2
+  { id: 'mf5',  fieldKey: 'contract_no',    labelAr: 'رقم العقد',          labelEn: 'Contract Number',       fieldType: FieldType.Text,        isRequired: true,  docTypeId: 'dt2' },
+  { id: 'mf6',  fieldKey: 'start_date',     labelAr: 'تاريخ البداية',      labelEn: 'Contract Start Date',   fieldType: FieldType.Date,        isRequired: true,  docTypeId: 'dt2' },
+  { id: 'mf7',  fieldKey: 'end_date',       labelAr: 'تاريخ الانتهاء',     labelEn: 'Contract End Date',     fieldType: FieldType.Date,        isRequired: true,  docTypeId: 'dt2' },
+  { id: 'mf8',  fieldKey: 'contract_value', labelAr: 'قيمة العقد',         labelEn: 'Contract Value',        fieldType: FieldType.Number,      isRequired: false, docTypeId: 'dt2' },
+  { id: 'mf9',  fieldKey: 'status',         labelAr: 'حالة العقد',         labelEn: 'Contract Status',       fieldType: FieldType.Dropdown,    isRequired: true,  docTypeId: 'dt2', optionSetId: 'os3' },
+  // dt3
+  { id: 'mf10', fieldKey: 'fiscal_year',    labelAr: 'السنة المالية',      labelEn: 'Fiscal Year',           fieldType: FieldType.Text,        isRequired: true,  docTypeId: 'dt3' },
+  { id: 'mf11', fieldKey: 'dept',           labelAr: 'الجهة المسؤولة',     labelEn: 'Responsible Dept',      fieldType: FieldType.Text,        isRequired: true,  docTypeId: 'dt3' },
+  // dt4
+  { id: 'mf12', fieldKey: 'decision_no',    labelAr: 'رقم القرار',         labelEn: 'Decision Number',       fieldType: FieldType.Text,        isRequired: true,  docTypeId: 'dt4' },
+  { id: 'mf13', fieldKey: 'decision_date',  labelAr: 'تاريخ القرار',       labelEn: 'Decision Date',         fieldType: FieldType.Date,        isRequired: true,  docTypeId: 'dt4' },
+  // dt5
+  { id: 'mf14', fieldKey: 'service_type',   labelAr: 'نوع الخدمة',         labelEn: 'Service Type',          fieldType: FieldType.Dropdown,    isRequired: true,  docTypeId: 'dt5', optionSetId: 'os2' },
+  { id: 'mf15', fieldKey: 'applicant_name', labelAr: 'اسم مقدم الطلب',    labelEn: 'Applicant Name',        fieldType: FieldType.Text,        isRequired: true,  docTypeId: 'dt5' },
+  { id: 'mf16', fieldKey: 'id_number',      labelAr: 'رقم الهوية',         labelEn: 'ID Number',             fieldType: FieldType.Text,        isRequired: true,  docTypeId: 'dt5' },
 ];

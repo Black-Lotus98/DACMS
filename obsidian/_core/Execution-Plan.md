@@ -687,4 +687,11 @@ All 15 module handler files follow the same pattern. Switching to a real backend
 - **2026-04-29 — M15 role-linking subroute pass:** Added `/kpi-linking/role/:role` route for focused role-to-KPI mapping details and wired entry links from the KPI linking screen.
 - **2026-04-29 — Route sanity + UI language cleanup pass:** Verified all newly added private routes are present/reachable and normalized remaining mixed-language UI strings in active feature components to English (seed data left unchanged).
 
+---
+
+## Related Notes
+
+- [[Session-M1-M2-M3-M14-Data-Layer-Fixes]] — full log of SRS-alignment work for M1/M2/M3/M14 data layers (2026-04-30)
+- [[Gap-Analysis]] — architectural gaps vs SRS; includes per-module data-layer completion status
+
 DACMS Frontend Execution Plan | Ministry of Industry & Trade | Confidential | April 2026

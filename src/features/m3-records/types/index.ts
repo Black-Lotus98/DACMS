@@ -1,14 +1,34 @@
-export enum RecordStatus { Draft='draft', Archived='archived', Moved='moved' }
-export enum SecrecyLevel { Public='public', Restricted='restricted', Confidential='confidential', TopSecret='top_secret' }
+export enum RecordStatus {
+  Active    = 'ACTIVE',
+  Lent      = 'LENT',
+  Destroyed = 'DESTROYED',
+  Migrated  = 'MIGRATED',
+  Archived  = 'ARCHIVED',
+}
+
+export enum SecrecyLevel {
+  Public    = 'PUBLIC',
+  Internal  = 'INTERNAL',
+  Secret    = 'SECRET',
+  TopSecret = 'TOP_SECRET',
+}
 
 export interface RecordItem {
   id: string;
   refNo: string;
-  title: string;
-  docType: string;
-  boxCode: string;
+  titleAr: string;
+  titleEn: string;
+  docTypeId: string;
+  categoryId: string;
+  boxId: string;
+  shelfId: string;
   status: RecordStatus;
   secrecy: SecrecyLevel;
+  issueDate: string;
+  archiveDate: string;
+  retentionEnd: string;
+  metadata: Record<string, string>;
+  createdBy: string;
 }
 
 export interface LocationHistory {
@@ -17,9 +37,22 @@ export interface LocationHistory {
   fromBox: string;
   toBox: string;
   movedAt: string;
+  movedBy: string;
+  reason: string;
+}
+
+export interface RecordFile {
+  id: string;
+  recordId: string;
+  fileName: string;
+  fileType: string;
+  fileUrl: string;
+  uploadedAt: string;
+  uploadedBy: string;
 }
 
 export interface RecordsState {
   items: RecordItem[];
   locationHistory: LocationHistory[];
+  files: RecordFile[];
 }

@@ -1,5 +1,8 @@
 export * from './types';
 export * from './schemas';
 export * from './hooks';
+export * from './store/slice';
 export { default as workflowsReducer } from './store/slice';
 export { WorkflowPage } from './components/WorkflowPage';
+export { WorkflowDetailPage } from './components/WorkflowDetailPage';
+export { WorkflowDesignerPage } from './components/WorkflowDesignerPage';

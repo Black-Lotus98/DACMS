@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addDestructionRequest } from '../store/slice';
+import { DestructionStatus } from '../types';
 import { RecordStatus } from '@/features/m3-records';
 
 export function DestructionFormPage() {
@@ -24,8 +25,8 @@ export function DestructionFormPage() {
       setError('Record reference does not exist.');
       return;
     }
-    if (record.status === RecordStatus.Draft) {
-      setError('Draft records cannot be sent to destruction workflow.');
+    if (record.status === RecordStatus.Destroyed) {
+      setError('Record is already destroyed.');
       return;
     }
     const hasOpenDestruction = destructionRequests.some(
@@ -43,7 +44,7 @@ export function DestructionFormPage() {
       id: `dr-${Date.now()}`,
       recordRef,
       reason,
-      status: 'pending_approval',
+      status: DestructionStatus.PendingApproval,
       approvalLevel: 1,
     }));
     router.push(`/${local}/destruction`);

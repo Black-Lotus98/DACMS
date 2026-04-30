@@ -1,13 +1,18 @@
 import { z } from 'zod';
-
-export const workflowSchema = z.object({
-  name: z.string().min(2),
-  status: z.string().min(1),
-});
+import { AssigneeType, StepType, WorkflowType } from '../types';
 
 export const workflowStepSchema = z.object({
-  name: z.string().min(2),
-  type: z.string().min(1),
-  slaHours: z.number().min(1),
-  order: z.number().min(1),
+  nameAr: z.string().min(2),
+  nameEn: z.string().min(2),
+  stepType: z.nativeEnum(StepType),
+  assigneeType: z.nativeEnum(AssigneeType).optional(),
+  slaHours: z.number().int().min(1).optional(),
+  order: z.number().int().min(1),
+});
+
+export const workflowSchema = z.object({
+  nameAr: z.string().min(2),
+  nameEn: z.string().min(2),
+  type: z.nativeEnum(WorkflowType),
+  steps: z.array(workflowStepSchema).min(1),
 });

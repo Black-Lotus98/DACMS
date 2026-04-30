@@ -90,7 +90,7 @@ export function ArchiveTree() {
               className="w-full flex items-center gap-2 p-3 text-sm font-semibold hover:bg-muted/50 transition-colors"
             >
               {open ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
-              <span className="flex-1 text-start">{room.name}</span>
+              <span className="flex-1 text-start">{room.nameAr}</span>
               <span className="text-xs font-mono text-muted-foreground font-normal">{room.code}</span>
               <span className={`text-xs font-normal ms-2 ${pct >= 90 ? 'text-red-500' : pct >= 70 ? 'text-amber-500' : 'text-green-600'}`}>
                 {pct}%

@@ -1,46 +1,62 @@
 export enum FieldType {
-  Text = 'text',
-  Number = 'number',
-  Date = 'date',
-  Select = 'select',
-  Boolean = 'boolean',
+  Text = 'TEXT',
+  Date = 'DATE',
+  Number = 'NUMBER',
+  Dropdown = 'DROPDOWN',
+  MultiSelect = 'MULTI_SELECT',
+  Checkbox = 'CHECKBOX',
 }
 
 export enum ActionAfter {
-  Destroy = 'destroy',
-  Transfer = 'transfer',
-  Review = 'review',
+  Destroy = 'DESTROY',
+  Migrate = 'MIGRATE',
+  Review = 'REVIEW',
+}
+
+export interface OptionSet {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  options: string[];
 }
 
 export interface DocumentType {
   id: string;
-  name: string;
+  nameAr: string;
+  nameEn: string;
   code: string;
-  retentionPolicyId: string;
+  description?: string;
+  isActive: boolean;
 }
 
 export interface DocumentCategory {
   id: string;
-  name: string;
-  parentId?: string;
+  nameAr: string;
+  nameEn: string;
+  code: string;
   docTypeId: string;
+  parentId?: string;
   level: 1 | 2 | 3 | 4;
 }
 
 export interface MetadataField {
   id: string;
-  label: string;
+  fieldKey: string;
+  labelAr: string;
+  labelEn: string;
   fieldType: FieldType;
-  required: boolean;
+  isRequired: boolean;
+  defaultVal?: string;
+  optionSetId?: string;
   docTypeId: string;
-  options?: string[];
 }
 
 export interface RetentionPolicy {
   id: string;
-  name: string;
+  docTypeId: string;
   periodYears: number;
   actionAfter: ActionAfter;
+  legalRef?: string;
 }
 
 export interface DataModelsState {
@@ -48,4 +64,5 @@ export interface DataModelsState {
   categories: DocumentCategory[];
   metadataFields: MetadataField[];
   retentionPolicies: RetentionPolicy[];
+  optionSets: OptionSet[];
 }

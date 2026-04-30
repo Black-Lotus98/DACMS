@@ -11,68 +11,86 @@ import { useParams } from 'next/navigation';
 
 const ACTION_LABELS: Record<ActionAfter, string> = {
   [ActionAfter.Destroy]: 'Destroy',
-  [ActionAfter.Transfer]: 'Transfer',
-  [ActionAfter.Review]: 'Review',
+  [ActionAfter.Migrate]: 'Migrate',
+  [ActionAfter.Review]:  'Review',
+};
+
+const ACTION_COLOR: Record<ActionAfter, string> = {
+  [ActionAfter.Destroy]: 'bg-red-100 text-red-700',
+  [ActionAfter.Migrate]: 'bg-blue-100 text-blue-700',
+  [ActionAfter.Review]:  'bg-amber-100 text-amber-700',
 };
 
 type Tab = 'types' | 'retention';
+
+const INPUT = 'w-full h-9 rounded-md border px-3 text-sm';
+const BTN   = 'h-9 px-3 rounded-md border text-sm hover:bg-muted';
 
 export function DataModelsPage() {
   const dispatch = useAppDispatch();
   const { local } = useParams<{ local: string }>();
   const [tab, setTab] = useState<Tab>('types');
-  const [docTypeName, setDocTypeName] = useState('');
-  const [docTypeCode, setDocTypeCode] = useState('');
-  const [selectedTypeId, setSelectedTypeId] = useState('');
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newFieldLabel, setNewFieldLabel] = useState('');
-  const [newFieldType, setNewFieldType] = useState<FieldType>(FieldType.Text);
 
-  const { documentTypes, retentionPolicies, getPolicyById, getCategoriesForType, getFieldsForType } =
+  // Doc type form
+  const [docTypeNameAr, setDocTypeNameAr] = useState('');
+  const [docTypeNameEn, setDocTypeNameEn] = useState('');
+  const [docTypeCode, setDocTypeCode]     = useState('');
+
+  // Category form
+  const [selectedTypeId,   setSelectedTypeId]   = useState('');
+  const [catNameAr,        setCatNameAr]         = useState('');
+  const [catNameEn,        setCatNameEn]         = useState('');
+  const [catCode,          setCatCode]           = useState('');
+
+  // Metadata field form
+  const [fieldLabelAr, setFieldLabelAr] = useState('');
+  const [fieldLabelEn, setFieldLabelEn] = useState('');
+  const [fieldKey,     setFieldKey]     = useState('');
+  const [fieldType,    setFieldType]    = useState<FieldType>(FieldType.Text);
+  const [fieldRequired, setFieldRequired] = useState(false);
+
+  const { documentTypes, retentionPolicies, getPolicyByDocTypeId, getCategoriesForType, getFieldsForType } =
     useDataModelsModule();
 
   const activeTypeId = selectedTypeId || documentTypes[0]?.id || '';
 
   function createDocType() {
-    const fallbackPolicy = retentionPolicies[0]?.id;
-    if (!docTypeName.trim() || !docTypeCode.trim() || !fallbackPolicy) return;
-    dispatch(
-      addDocumentType({
-        id: `dt-${Date.now()}`,
-        name: docTypeName.trim(),
-        code: docTypeCode.trim(),
-        retentionPolicyId: fallbackPolicy,
-      })
-    );
-    setDocTypeName('');
-    setDocTypeCode('');
+    if (!docTypeNameAr.trim() || !docTypeNameEn.trim() || !docTypeCode.trim()) return;
+    dispatch(addDocumentType({
+      id: `dt-${Date.now()}`,
+      nameAr: docTypeNameAr.trim(),
+      nameEn: docTypeNameEn.trim(),
+      code: docTypeCode.trim(),
+      isActive: true,
+    }));
+    setDocTypeNameAr(''); setDocTypeNameEn(''); setDocTypeCode('');
   }
 
   function createCategory() {
-    if (!activeTypeId || !newCategoryName.trim()) return;
-    dispatch(
-      addCategory({
-        id: `cat-${Date.now()}`,
-        name: newCategoryName.trim(),
-        docTypeId: activeTypeId,
-        level: 1,
-      })
-    );
-    setNewCategoryName('');
+    if (!activeTypeId || !catNameAr.trim() || !catNameEn.trim() || !catCode.trim()) return;
+    dispatch(addCategory({
+      id: `cat-${Date.now()}`,
+      nameAr: catNameAr.trim(),
+      nameEn: catNameEn.trim(),
+      code: catCode.trim(),
+      docTypeId: activeTypeId,
+      level: 1,
+    }));
+    setCatNameAr(''); setCatNameEn(''); setCatCode('');
   }
 
   function createMetadataField() {
-    if (!activeTypeId || !newFieldLabel.trim()) return;
-    dispatch(
-      addMetadataField({
-        id: `mf-${Date.now()}`,
-        label: newFieldLabel.trim(),
-        fieldType: newFieldType,
-        required: false,
-        docTypeId: activeTypeId,
-      })
-    );
-    setNewFieldLabel('');
+    if (!activeTypeId || !fieldLabelAr.trim() || !fieldLabelEn.trim() || !fieldKey.trim()) return;
+    dispatch(addMetadataField({
+      id: `mf-${Date.now()}`,
+      fieldKey: fieldKey.trim(),
+      labelAr: fieldLabelAr.trim(),
+      labelEn: fieldLabelEn.trim(),
+      fieldType,
+      isRequired: fieldRequired,
+      docTypeId: activeTypeId,
+    }));
+    setFieldLabelAr(''); setFieldLabelEn(''); setFieldKey(''); setFieldRequired(false);
   }
 
   return (
@@ -81,11 +99,10 @@ export function DataModelsPage() {
         <Database className="w-6 h-6 text-primary-a0" />
         <div>
           <h1 className="text-2xl font-bold">Data Models</h1>
-          <p className="text-sm text-muted-foreground">Document types, category structures, metadata fields, and retention policies.</p>
+          <p className="text-sm text-muted-foreground">Document types, category hierarchies, metadata fields, and retention policies.</p>
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 p-1 rounded-lg bg-muted w-fit">
         {([['types', 'Document types', FileText], ['retention', 'Retention policies', Clock]] as const).map(
           ([key, label, Icon]) => (
@@ -102,50 +119,77 @@ export function DataModelsPage() {
       </div>
 
       {tab === 'types' && (
-        <div className="space-y-3">
-          <section className="rounded-xl border bg-background p-4 grid lg:grid-cols-3 gap-4">
+        <div className="space-y-4">
+          <section className="rounded-xl border bg-background p-4 space-y-4">
+            {/* Add document type */}
             <div className="space-y-2">
               <h3 className="font-semibold text-sm">Add document type</h3>
-              <input value={docTypeName} onChange={(e)=>setDocTypeName(e.target.value)} placeholder="Type name" className="w-full h-9 rounded-md border px-3 text-sm" />
-              <input value={docTypeCode} onChange={(e)=>setDocTypeCode(e.target.value)} placeholder="Code (DOCX)" className="w-full h-9 rounded-md border px-3 text-sm font-mono" />
-              <button onClick={createDocType} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                <input value={docTypeNameAr} onChange={(e) => setDocTypeNameAr(e.target.value)} placeholder="الاسم بالعربي" dir="rtl" className={INPUT} />
+                <input value={docTypeNameEn} onChange={(e) => setDocTypeNameEn(e.target.value)} placeholder="Name (EN)" className={INPUT} />
+                <input value={docTypeCode}   onChange={(e) => setDocTypeCode(e.target.value)}   placeholder="Code (e.g. CORR)" className={`${INPUT} font-mono`} />
+                <button onClick={createDocType} className={BTN}>Add</button>
+              </div>
             </div>
-            <div className="space-y-2">
+
+            {/* Add category */}
+            <div className="space-y-2 border-t pt-4">
               <h3 className="font-semibold text-sm">Add category</h3>
-              <select value={activeTypeId} onChange={(e)=>setSelectedTypeId(e.target.value)} className="w-full h-9 rounded-md border px-3 text-sm">
-                {documentTypes.map((dt) => <option key={dt.id} value={dt.id}>{dt.name}</option>)}
-              </select>
-              <input value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} placeholder="Category name" className="w-full h-9 rounded-md border px-3 text-sm" />
-              <button onClick={createCategory} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-2">
+                <select value={activeTypeId} onChange={(e) => setSelectedTypeId(e.target.value)} className={INPUT}>
+                  {documentTypes.map((dt) => <option key={dt.id} value={dt.id}>{dt.nameEn}</option>)}
+                </select>
+                <input value={catNameAr} onChange={(e) => setCatNameAr(e.target.value)} placeholder="الاسم بالعربي" dir="rtl" className={INPUT} />
+                <input value={catNameEn} onChange={(e) => setCatNameEn(e.target.value)} placeholder="Category name (EN)" className={INPUT} />
+                <input value={catCode}   onChange={(e) => setCatCode(e.target.value)}   placeholder="Code" className={`${INPUT} font-mono`} />
+                <button onClick={createCategory} className={BTN}>Add</button>
+              </div>
             </div>
-            <div className="space-y-2">
+
+            {/* Add metadata field */}
+            <div className="space-y-2 border-t pt-4">
               <h3 className="font-semibold text-sm">Add metadata field</h3>
-              <select value={newFieldType} onChange={(e)=>setNewFieldType(e.target.value as FieldType)} className="w-full h-9 rounded-md border px-3 text-sm">
-                {Object.values(FieldType).map((ft)=><option key={ft} value={ft}>{ft}</option>)}
-              </select>
-              <input value={newFieldLabel} onChange={(e)=>setNewFieldLabel(e.target.value)} placeholder="Field label" className="w-full h-9 rounded-md border px-3 text-sm" />
-              <button onClick={createMetadataField} className="h-9 px-3 rounded-md border text-sm hover:bg-muted">Add</button>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-6 gap-2">
+                <input value={fieldKey}     onChange={(e) => setFieldKey(e.target.value)}     placeholder="field_key" className={`${INPUT} font-mono`} />
+                <input value={fieldLabelAr} onChange={(e) => setFieldLabelAr(e.target.value)} placeholder="التسمية بالعربي" dir="rtl" className={INPUT} />
+                <input value={fieldLabelEn} onChange={(e) => setFieldLabelEn(e.target.value)} placeholder="Label (EN)" className={INPUT} />
+                <select value={fieldType} onChange={(e) => setFieldType(e.target.value as FieldType)} className={INPUT}>
+                  {Object.values(FieldType).map((ft) => <option key={ft} value={ft}>{ft}</option>)}
+                </select>
+                <label className="flex items-center gap-2 text-sm h-9">
+                  <input type="checkbox" checked={fieldRequired} onChange={(e) => setFieldRequired(e.target.checked)} />
+                  Required
+                </label>
+                <button onClick={createMetadataField} className={BTN}>Add</button>
+              </div>
             </div>
           </section>
+
           {documentTypes.map((dt) => {
-            const policy = getPolicyById(dt.retentionPolicyId);
-            const cats = getCategoriesForType(dt.id);
+            const policy = getPolicyByDocTypeId(dt.id);
+            const cats   = getCategoriesForType(dt.id);
             const fields = getFieldsForType(dt.id);
             return (
               <div key={dt.id} className="rounded-xl border bg-background p-4 space-y-3">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="font-semibold">{dt.name}</p>
+                    <p className="font-semibold">{dt.nameAr}</p>
+                    <p className="text-sm text-muted-foreground">{dt.nameEn}</p>
                     <p className="text-xs font-mono text-muted-foreground">{dt.code}</p>
                     <Link href={`/${local}/data-models/type/${dt.id}`} className="text-xs text-primary hover:underline mt-1 inline-block">
                       Open type view
                     </Link>
                   </div>
-                  <span className="text-xs bg-muted px-2 py-1 rounded-full whitespace-nowrap">
-                    {policy?.name ?? '—'}
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {!dt.isActive && <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Inactive</span>}
+                    {policy && (
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ACTION_COLOR[policy.actionAfter]}`}>
+                        {policy.periodYears}y → {ACTION_LABELS[policy.actionAfter]}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="flex gap-4 text-xs text-muted-foreground border-t pt-3">
+                <div className="flex gap-4 text-xs text-muted-foreground border-t pt-2">
                   <span>{cats.length} categories</span>
                   <span>{fields.length} metadata fields</span>
                 </div>
@@ -160,27 +204,28 @@ export function DataModelsPage() {
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/50">
               <tr>
-                <th className="text-start p-3 font-medium">Policy</th>
-                <th className="text-start p-3 font-medium">Retention period</th>
-                <th className="text-start p-3 font-medium">Action after period</th>
+                <th className="text-start p-3 font-medium">Document type</th>
+                <th className="text-start p-3 font-medium">Period</th>
+                <th className="text-start p-3 font-medium">Action after</th>
+                <th className="text-start p-3 font-medium">Legal ref</th>
               </tr>
             </thead>
             <tbody>
-              {retentionPolicies.map((rp) => (
-                <tr key={rp.id} className="border-b last:border-b-0 hover:bg-muted/30">
-                  <td className="p-3">{rp.name}</td>
-                  <td className="p-3">{rp.periodYears} years</td>
-                  <td className="p-3">
-                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                      rp.actionAfter === ActionAfter.Destroy ? 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400'
-                      : rp.actionAfter === ActionAfter.Transfer ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400'
-                      : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400'
-                    }`}>
-                      {ACTION_LABELS[rp.actionAfter]}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {retentionPolicies.map((rp) => {
+                const dt = documentTypes.find((d) => d.id === rp.docTypeId);
+                return (
+                  <tr key={rp.id} className="border-b last:border-b-0 hover:bg-muted/30">
+                    <td className="p-3">{dt ? dt.nameEn : rp.docTypeId}</td>
+                    <td className="p-3">{rp.periodYears} years</td>
+                    <td className="p-3">
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${ACTION_COLOR[rp.actionAfter]}`}>
+                        {ACTION_LABELS[rp.actionAfter]}
+                      </span>
+                    </td>
+                    <td className="p-3 text-muted-foreground">{rp.legalRef ?? '—'}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
