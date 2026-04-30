@@ -1,13 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import { useDestructionModule } from '../hooks';
-import { DestructionStatus, MigrationStatus } from '../types';
+import { DestructionStatus, MigrationStatus, MigrationType } from '../types';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useAppDispatch } from '@/store/hooks';
+import { addMigration, updateMigrationStatus } from '../store/slice';
 
 const STATUS_COLOR: Record<DestructionStatus, string> = {
   [DestructionStatus.Pending]:     'bg-amber-100 text-amber-700',
+  [DestructionStatus.SupervisorReview]: 'bg-indigo-100 text-indigo-700',
   [DestructionStatus.LegalReview]: 'bg-blue-100 text-blue-700',
+  [DestructionStatus.DirectorReview]: 'bg-cyan-100 text-cyan-700',
   [DestructionStatus.Approved]:    'bg-green-100 text-green-700',
   [DestructionStatus.Rejected]:    'bg-red-100 text-red-700',
   [DestructionStatus.Executed]:    'bg-muted text-muted-foreground',
@@ -21,9 +26,38 @@ const MIG_STATUS_COLOR: Record<MigrationStatus, string> = {
 };
 
 export function DestructionPage() {
-  const { requests, migrations, getItemsByRequestId, getExpiringSoon } = useDestructionModule();
+  const dispatch = useAppDispatch();
+  const { requests, migrations, getItemsByRequestId, getExpiringSoon, getRetentionExpiryReport } = useDestructionModule();
   const { local } = useParams<{ local: string }>();
   const expiringSoon = getExpiringSoon();
+  const report = getRetentionExpiryReport();
+  const [destination, setDestination] = useState('');
+  const [migrationType, setMigrationType] = useState<MigrationType>(MigrationType.Physical);
+
+  function createMigrationRequest() {
+    if (destination.trim().length < 2) return;
+    dispatch(addMigration({
+      id: `mr-${Date.now()}`,
+      refNo: `MIG-${new Date().getFullYear()}-${String(Date.now()).slice(-5)}`,
+      requesterId: 'current-user',
+      destination: destination.trim(),
+      type: migrationType,
+      status: MigrationStatus.Pending,
+    }));
+    setDestination('');
+    setMigrationType(MigrationType.Physical);
+  }
+
+  function moveMigrationForward(id: string, status: MigrationStatus) {
+    const next: Record<MigrationStatus, MigrationStatus> = {
+      [MigrationStatus.Pending]: MigrationStatus.Approved,
+      [MigrationStatus.Approved]: MigrationStatus.InProgress,
+      [MigrationStatus.InProgress]: MigrationStatus.Completed,
+      [MigrationStatus.Completed]: MigrationStatus.Completed,
+    };
+    if (status === MigrationStatus.Completed) return;
+    dispatch(updateMigrationStatus({ id, status: next[status] }));
+  }
 
   return (
     <div className="space-y-6">
@@ -47,6 +81,23 @@ export function DestructionPage() {
           {expiringSoon.length} record{expiringSoon.length !== 1 ? 's' : ''} approaching retention expiry within 90 days.
         </div>
       )}
+
+      <section className="rounded-xl border bg-background p-4">
+        <h2 className="font-semibold text-sm mb-1">Retention expiry report (next 90 days)</h2>
+        <p className="text-xs text-muted-foreground mb-3">Total upcoming expiries: {report.total}</p>
+        {Object.keys(report.byMonth).length === 0 ? (
+          <p className="text-sm text-muted-foreground">No upcoming expiries.</p>
+        ) : (
+          <ul className="space-y-1 text-sm">
+            {Object.entries(report.byMonth).map(([month, count]) => (
+              <li key={month} className="flex items-center gap-2">
+                <span className="font-mono text-xs">{month}</span>
+                <span>{count} record{count !== 1 ? 's' : ''}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section className="rounded-xl border bg-background overflow-x-auto">
         <div className="px-4 py-2 border-b text-sm font-medium">Destruction requests</div>
@@ -87,6 +138,26 @@ export function DestructionPage() {
 
       <section className="rounded-xl border bg-background p-4">
         <h2 className="font-semibold text-sm mb-3">Migration requests</h2>
+        <div className="mb-4 grid gap-2 sm:grid-cols-[1fr_180px_auto]">
+          <input
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            placeholder="Destination system/location"
+            className="h-9 rounded-md border px-3 text-sm"
+          />
+          <select
+            value={migrationType}
+            onChange={(e) => setMigrationType(e.target.value as MigrationType)}
+            className="h-9 rounded-md border px-2 text-sm bg-background"
+          >
+            <option value={MigrationType.Physical}>PHYSICAL</option>
+            <option value={MigrationType.Digital}>DIGITAL</option>
+            <option value={MigrationType.Both}>BOTH</option>
+          </select>
+          <button onClick={createMigrationRequest} className="h-9 rounded-md bg-primary text-primary-foreground px-3 text-sm">
+            New migration
+          </button>
+        </div>
         {migrations.length === 0 ? (
           <p className="text-sm text-muted-foreground">No migration requests.</p>
         ) : (
@@ -99,6 +170,13 @@ export function DestructionPage() {
                 <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${MIG_STATUS_COLOR[m.status]}`}>
                   {m.status}
                 </span>
+                <button
+                  onClick={() => moveMigrationForward(m.id, m.status)}
+                  disabled={m.status === MigrationStatus.Completed}
+                  className="h-7 px-2 rounded-md border text-xs disabled:opacity-50"
+                >
+                  Advance
+                </button>
               </li>
             ))}
           </ul>

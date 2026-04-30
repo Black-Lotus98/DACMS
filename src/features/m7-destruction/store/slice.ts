@@ -23,20 +23,40 @@ const destructionSlice = createSlice({
       state.items.push(action.payload);
     },
 
-    submitForLegalReview(state, action: PayloadAction<string>) {
+    submitForSupervisorReview(state, action: PayloadAction<string>) {
       const req = state.requests.find((r) => r.id === action.payload);
       if (req && req.status === DestructionStatus.Pending) {
-        req.status = DestructionStatus.LegalReview;
+        req.status = DestructionStatus.SupervisorReview;
       }
     },
 
-    approveRequest(
+    approveSupervisor(
+      state,
+      action: PayloadAction<{ requestId: string; approvedBy: string }>
+    ) {
+      const req = state.requests.find((r) => r.id === action.payload.requestId);
+      if (!req || req.status !== DestructionStatus.SupervisorReview) return;
+      req.status = DestructionStatus.LegalReview;
+      req.supervisorApprovedBy = action.payload.approvedBy;
+    },
+
+    approveLegal(
       state,
       action: PayloadAction<{ requestId: string; approvedBy: string }>
     ) {
       const req = state.requests.find((r) => r.id === action.payload.requestId);
       if (!req || req.status !== DestructionStatus.LegalReview) return;
-      req.status     = DestructionStatus.Approved;
+      req.status = DestructionStatus.DirectorReview;
+      req.legalApprovedBy = action.payload.approvedBy;
+    },
+
+    approveDirector(
+      state,
+      action: PayloadAction<{ requestId: string; approvedBy: string }>
+    ) {
+      const req = state.requests.find((r) => r.id === action.payload.requestId);
+      if (!req || req.status !== DestructionStatus.DirectorReview) return;
+      req.status = DestructionStatus.Approved;
       req.approvedBy = action.payload.approvedBy;
     },
 
@@ -53,13 +73,14 @@ const destructionSlice = createSlice({
 
     executeDestruction(
       state,
-      action: PayloadAction<{ requestId: string; certificate: string }>
+      action: PayloadAction<{ requestId: string; certificate: string; executedBy: string }>
     ) {
       const req = state.requests.find((r) => r.id === action.payload.requestId);
       if (!req || req.status !== DestructionStatus.Approved) return;
       req.status      = DestructionStatus.Executed;
       req.executedAt  = new Date().toISOString();
       req.certificate = action.payload.certificate;
+      req.executedBy = action.payload.executedBy;
     },
 
     addMigration(state, action: PayloadAction<MigrationRequest>) {
@@ -78,7 +99,8 @@ const destructionSlice = createSlice({
 
 export const {
   addDestructionRequest, addDestructionItem,
-  submitForLegalReview, approveRequest, rejectRequest, executeDestruction,
+  submitForSupervisorReview, approveSupervisor, approveLegal, approveDirector,
+  rejectRequest, executeDestruction,
   addMigration, updateMigrationStatus,
 } = destructionSlice.actions;
 export default destructionSlice.reducer;

@@ -1,6 +1,68 @@
-import type { ReportDefinition } from '../types';
+import { ReportType, type ReportDefinition } from '../types';
+
 export const reportsSeed: ReportDefinition[] = [
-  { id: 'rp1', name: 'تقرير الإعارات', category: 'Lifecycle' },
-  { id: 'rp2', name: 'تقرير Occupancy', category: 'Archive' },
-  { id: 'rp3', name: 'تقرير الصلاحيات', category: 'Security' },
+  {
+    id: 'rp-transfers',
+    nameAr: 'تقرير نقل السجلات',
+    nameEn: 'Archive Transfer Report',
+    type: ReportType.Transfers,
+    createdBy: 'system',
+    filters: {},
+  },
+  {
+    id: 'rp-lending',
+    nameAr: 'تقرير نشاط الإعارة',
+    nameEn: 'Lending Activity Report',
+    type: ReportType.Lending,
+    createdBy: 'system',
+    filters: {},
+  },
+  {
+    id: 'rp-destruction',
+    nameAr: 'تقرير الإتلاف والترحيل',
+    nameEn: 'Destruction & Migration Report',
+    type: ReportType.Destruction,
+    createdBy: 'system',
+    filters: {},
+  },
+  {
+    id: 'rp-inventory',
+    nameAr: 'تقرير جرد السجلات',
+    nameEn: 'Records Inventory Report',
+    type: ReportType.Inventory,
+    createdBy: 'system',
+    filters: {},
+  },
+  {
+    id: 'rp-capacity',
+    nameAr: 'تقرير سعة التخزين',
+    nameEn: 'Storage Capacity Report',
+    type: ReportType.Capacity,
+    createdBy: 'system',
+    filters: {},
+  },
+  {
+    id: 'rp-user-activity',
+    nameAr: 'تقرير نشاط المستخدمين',
+    nameEn: 'User Activity Report',
+    type: ReportType.UserActivity,
+    createdBy: 'system',
+    filters: {},
+  },
+  {
+    id: 'rp-overdue',
+    nameAr: 'تقرير الإعارات المتأخرة',
+    nameEn: 'Overdue Records Report',
+    type: ReportType.Overdue,
+    createdBy: 'system',
+    filters: {},
+  },
+  {
+    id: 'rp-expiry',
+    nameAr: 'تقرير انتهاء فترات الاحتفاظ',
+    nameEn: 'Retention Expiry Report',
+    type: ReportType.Expiry,
+    createdBy: 'system',
+    filters: {},
+  },
 ];

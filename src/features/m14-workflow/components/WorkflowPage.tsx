@@ -23,7 +23,7 @@ const EXECUTION_LABEL: Record<ExecutionStatus, string> = {
 
 export function WorkflowPage() {
   const dispatch = useAppDispatch();
-  const { workflows, executions, getCurrentStep } = useWorkflowModule();
+  const { workflows, executions, getCurrentStep, slaAlerts } = useWorkflowModule();
   const { local } = useParams<{ local: string }>();
 
   return (
@@ -78,6 +78,18 @@ export function WorkflowPage() {
       </section>
 
       <section className="rounded-xl border bg-background p-4">
+        {slaAlerts.length > 0 && (
+          <div className="mb-3 space-y-1">
+            {slaAlerts.map((a) => (
+              <div
+                key={`${a.executionId}-${a.kind}`}
+                className={`text-xs rounded-md border px-2 py-1 ${a.kind === 'BREACHED' ? 'border-red-300 bg-red-50 text-red-800' : 'border-amber-300 bg-amber-50 text-amber-800'}`}
+              >
+                SLA {a.kind.toLowerCase()}: `{a.workflowName}` / {a.stepName} ({a.elapsedHours}h / {a.slaHours}h)
+              </div>
+            ))}
+          </div>
+        )}
         <h2 className="font-semibold mb-3">Live executions</h2>
         {executions.length === 0 ? (
           <p className="text-sm text-muted-foreground">No executions yet.</p>

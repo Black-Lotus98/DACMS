@@ -4,6 +4,7 @@ import { MigrationType } from '../types';
 export const destructionRequestSchema = z.object({
   requesterId:   z.string().min(1),
   justification: z.string().min(3),
+  legalBasis:    z.string().min(3).optional(),
   recordIds:     z.array(z.string().min(1)).min(1),
 });
 

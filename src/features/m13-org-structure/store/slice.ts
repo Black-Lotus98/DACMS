@@ -24,10 +24,11 @@ const orgSlice = createSlice({
     },
     assignDepartmentResponsible(
       state,
-      action: PayloadAction<{ departmentId: string; responsibleEmail: string }>
+      action: PayloadAction<{ departmentId: string; assigneeId: string; responsibleEmail?: string }>
     ) {
       const dept = state.departments.find((d) => d.id === action.payload.departmentId);
       if (!dept) return;
+      dept.assigneeId = action.payload.assigneeId;
       dept.responsibleEmail = action.payload.responsibleEmail;
     },
   },

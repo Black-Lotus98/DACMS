@@ -57,6 +57,9 @@ export function WorkflowDesignerPage() {
     if (!nameAr.trim() || !nameEn.trim()) { setError('Workflow name (AR and EN) is required.'); return; }
     if (steps.length === 0) { setError('At least one step is required.'); return; }
     if (steps.some((s) => !s.nameAr.trim() || !s.nameEn.trim())) { setError('All steps need Arabic and English names.'); return; }
+    if (steps[0]?.stepType !== StepType.Trigger) { setError('First step must be TRIGGER.'); return; }
+    if (steps.some((s) => s.slaHours !== undefined && s.slaHours < 1)) { setError('SLA hours must be >= 1.'); return; }
+    if (!steps.some((s) => s.stepType === StepType.Human)) { setError('Workflow must include at least one HUMAN step.'); return; }
 
     dispatch(addWorkflow({
       id: `wf-${Date.now()}`,

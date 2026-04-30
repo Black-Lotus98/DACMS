@@ -1,9 +1,11 @@
 export enum DestructionStatus {
-  Pending     = 'PENDING',
-  LegalReview = 'LEGAL_REVIEW',
-  Approved    = 'APPROVED',
-  Rejected    = 'REJECTED',
-  Executed    = 'EXECUTED',
+  Pending          = 'PENDING',
+  SupervisorReview = 'SUPERVISOR_REVIEW',
+  LegalReview      = 'LEGAL_REVIEW',
+  DirectorReview   = 'DIRECTOR_REVIEW',
+  Approved         = 'APPROVED',
+  Rejected         = 'REJECTED',
+  Executed         = 'EXECUTED',
 }
 
 export enum MigrationType {
@@ -24,8 +26,12 @@ export interface DestructionRequest {
   refNo:         string;
   requesterId:   string;
   justification: string;
+  legalBasis?:   string;
   status:        DestructionStatus;
+  supervisorApprovedBy?: string;
+  legalApprovedBy?: string;
   approvedBy?:   string;
+  executedBy?:   string;
   executedAt?:   string;
   certificate?:  string;
   rejectedBy?:   string;

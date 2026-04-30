@@ -1,22 +1,27 @@
 export interface Organization {
   id: string;
-  name: string;
+  nameAr: string;
+  nameEn: string;
   code: string;
 }
 
 export interface Branch {
   id: string;
-  name: string;
+  nameAr: string;
+  nameEn: string;
   code: string;
   organizationId: string;
+  isActive: boolean;
 }
 
 export interface Department {
   id: string;
-  name: string;
+  nameAr: string;
+  nameEn: string;
   code: string;
   branchId: string;
   parentDeptId?: string;
+  assigneeId?: string;
   responsibleEmail?: string;
 }
 

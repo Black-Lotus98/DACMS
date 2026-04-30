@@ -25,7 +25,7 @@ const workflowsSlice = createSlice({
     // F14.7: DRAFT → PUBLISHED → ARCHIVED; only one PUBLISHED per workflow type at a time
     publishWorkflow(state, action: PayloadAction<string>) {
       const wf = state.definitions.find((w) => w.id === action.payload);
-      if (!wf || wf.status === WorkflowStatus.Archived) return;
+      if (!wf || wf.status !== WorkflowStatus.Draft) return;
       state.definitions
         .filter((w) => w.type === wf.type && w.status === WorkflowStatus.Published)
         .forEach((w) => { w.status = WorkflowStatus.Archived; });
@@ -40,7 +40,7 @@ const workflowsSlice = createSlice({
     // Creates a new DRAFT version of an existing published workflow (F14.7)
     createNewVersion(state, action: PayloadAction<string>) {
       const source = state.definitions.find((w) => w.id === action.payload);
-      if (!source) return;
+      if (!source || source.status !== WorkflowStatus.Published) return;
       state.definitions.unshift({
         ...source,
         id: `${source.id}-v${source.version + 1}`,

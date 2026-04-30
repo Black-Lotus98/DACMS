@@ -4,7 +4,15 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useAppDispatch } from '@/store/hooks';
-import { approveRequest, executeDestruction, rejectRequest, submitForLegalReview } from '../store/slice';
+import { updateRecordStatus, RecordStatus } from '@/features/m3-records';
+import {
+  approveDirector,
+  approveLegal,
+  approveSupervisor,
+  executeDestruction,
+  rejectRequest,
+  submitForSupervisorReview,
+} from '../store/slice';
 import { useDestructionModule } from '../hooks';
 import { DestructionStatus } from '../types';
 
@@ -44,7 +52,10 @@ export function DestructionDetailPage() {
         <div className="grid sm:grid-cols-2 gap-1">
           <p><span className="text-muted-foreground">Requester:</span> {request.requesterId}</p>
           <p><span className="text-muted-foreground">Status:</span> {request.status}</p>
+          {request.supervisorApprovedBy && <p><span className="text-muted-foreground">Supervisor approved by:</span> {request.supervisorApprovedBy}</p>}
+          {request.legalApprovedBy && <p><span className="text-muted-foreground">Legal approved by:</span> {request.legalApprovedBy}</p>}
           {request.approvedBy  && <p><span className="text-muted-foreground">Approved by:</span> {request.approvedBy}</p>}
+          {request.executedBy  && <p><span className="text-muted-foreground">Executed by:</span> {request.executedBy}</p>}
           {request.executedAt  && <p><span className="text-muted-foreground">Executed:</span> {request.executedAt.slice(0, 10)}</p>}
           {request.rejectedBy  && <p><span className="text-muted-foreground">Rejected by:</span> {request.rejectedBy}</p>}
           {request.certificate && (
@@ -60,6 +71,9 @@ export function DestructionDetailPage() {
           )}
         </div>
         <p className="pt-1"><span className="text-muted-foreground">Justification:</span> {request.justification}</p>
+        {request.legalBasis && (
+          <p><span className="text-muted-foreground">Legal basis:</span> {request.legalBasis}</p>
+        )}
       </section>
 
       <section className="rounded-xl border bg-background p-4">
@@ -83,16 +97,34 @@ export function DestructionDetailPage() {
 
         {request.status === DestructionStatus.Pending && (
           <button
-            onClick={() => dispatch(submitForLegalReview(request.id))}
+            onClick={() => dispatch(submitForSupervisorReview(request.id))}
             className="h-9 px-3 rounded-md border text-sm hover:bg-muted"
           >
-            Submit for legal review
+            Submit for supervisor review
+          </button>
+        )}
+
+        {request.status === DestructionStatus.SupervisorReview && (
+          <button
+            onClick={() => dispatch(approveSupervisor({ requestId: request.id, approvedBy: 'current-supervisor' }))}
+            className="h-9 px-3 rounded-md bg-primary text-primary-foreground text-sm"
+          >
+            Approve (Supervisor)
           </button>
         )}
 
         {request.status === DestructionStatus.LegalReview && (
           <button
-            onClick={() => dispatch(approveRequest({ requestId: request.id, approvedBy: 'current-user' }))}
+            onClick={() => dispatch(approveLegal({ requestId: request.id, approvedBy: 'current-legal' }))}
+            className="h-9 px-3 rounded-md bg-primary text-primary-foreground text-sm"
+          >
+            Approve (Legal)
+          </button>
+        )}
+
+        {request.status === DestructionStatus.DirectorReview && (
+          <button
+            onClick={() => dispatch(approveDirector({ requestId: request.id, approvedBy: 'current-director' }))}
             className="h-9 px-3 rounded-md bg-primary text-primary-foreground text-sm"
           >
             Approve (Director)
@@ -101,10 +133,16 @@ export function DestructionDetailPage() {
 
         {request.status === DestructionStatus.Approved && (
           <button
-            onClick={() => dispatch(executeDestruction({
-              requestId:   request.id,
-              certificate: `/certificates/${request.refNo}.pdf`,
-            }))}
+            onClick={() => {
+              dispatch(executeDestruction({
+                requestId:   request.id,
+                certificate: `/certificates/${request.refNo}.pdf`,
+                executedBy:  'current-user',
+              }));
+              for (const item of items) {
+                dispatch(updateRecordStatus({ recordId: item.recordId, status: RecordStatus.Destroyed }));
+              }
+            }}
             className="h-9 px-3 rounded-md bg-red-600 text-white text-sm hover:bg-red-700"
           >
             Execute destruction
@@ -112,7 +150,9 @@ export function DestructionDetailPage() {
         )}
 
         {(request.status === DestructionStatus.Pending ||
-          request.status === DestructionStatus.LegalReview) && (
+          request.status === DestructionStatus.SupervisorReview ||
+          request.status === DestructionStatus.LegalReview ||
+          request.status === DestructionStatus.DirectorReview) && (
           <div className="flex gap-2 pt-1">
             <input
               value={rejectionReason}

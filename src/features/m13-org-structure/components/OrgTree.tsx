@@ -27,7 +27,7 @@ function DeptNode({ dept, allDepts, depth = 0 }: DeptNodeProps) {
             : <ChevronRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
           : <span className="w-3.5 shrink-0" />}
         <Users className="w-4 h-4 shrink-0 text-muted-foreground" />
-        <span className="flex-1">{dept.name}</span>
+        <span className="flex-1">{dept.nameEn}</span>
         <span className="text-xs text-muted-foreground font-mono">{dept.code}</span>
       </button>
       {open && children.map((child) => (

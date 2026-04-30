@@ -20,6 +20,7 @@ export function DestructionFormPage() {
 
   const [requesterId,   setRequesterId]   = useState('');
   const [justification, setJustification] = useState('');
+  const [legalBasis,    setLegalBasis]    = useState('');
   const [recordId,      setRecordId]      = useState('');
   const [error,         setError]         = useState('');
 
@@ -33,6 +34,11 @@ export function DestructionFormPage() {
     }
     if (record.status === RecordStatus.Destroyed) {
       setError('Record is already destroyed.');
+      return;
+    }
+    const today = new Date().toISOString().slice(0, 10);
+    if (record.retentionEnd >= today) {
+      setError('Only records past retention end date can be destroyed.');
       return;
     }
 
@@ -53,6 +59,7 @@ export function DestructionFormPage() {
       refNo:         `DST-${new Date().getFullYear()}-${String(Date.now()).slice(-5)}`,
       requesterId:   requesterId.trim(),
       justification: justification.trim(),
+      legalBasis:    legalBasis.trim() || undefined,
       status:        DestructionStatus.Pending,
     }));
     dispatch(addDestructionItem({
@@ -83,6 +90,11 @@ export function DestructionFormPage() {
         <div>
           <label className="text-sm mb-1 block">Justification</label>
           <textarea required value={justification} onChange={(e) => setJustification(e.target.value)} rows={3} className="w-full rounded-md border px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label className="text-sm mb-1 block">Legal basis (optional)</label>
+          <input value={legalBasis} onChange={(e) => setLegalBasis(e.target.value)} placeholder="e.g. Law/Decree reference" className={INPUT} />
         </div>
 
         <button type="submit" className="inline-flex h-9 px-4 items-center rounded-md bg-primary text-primary-foreground text-sm font-medium">

@@ -21,7 +21,11 @@ export function useDestructionModule() {
       pendingRequests:  state.requests.filter((r) => r.status === DestructionStatus.Pending),
       rejectedRequests: state.requests.filter((r) => r.status === DestructionStatus.Rejected),
       watchlistRequests: state.requests.filter(
-        (r) => r.status === DestructionStatus.Pending || r.status === DestructionStatus.LegalReview
+        (r) =>
+          r.status === DestructionStatus.Pending ||
+          r.status === DestructionStatus.SupervisorReview ||
+          r.status === DestructionStatus.LegalReview ||
+          r.status === DestructionStatus.DirectorReview
       ),
 
       getRequestById: (id: string) =>
@@ -37,6 +41,21 @@ export function useDestructionModule() {
 
       getOverdueRecords: () =>
         records.filter((r) => r.retentionEnd < today),
+
+      getRetentionExpiryReport: () => {
+        const ninetyDay = records.filter(
+          (r) => r.retentionEnd >= today && r.retentionEnd <= warningDate
+        );
+        const byMonth: Record<string, number> = {};
+        for (const rec of ninetyDay) {
+          const month = rec.retentionEnd.slice(0, 7);
+          byMonth[month] = (byMonth[month] ?? 0) + 1;
+        }
+        return {
+          total: ninetyDay.length,
+          byMonth,
+        };
+      },
     };
   }, [state, records]);
 }

@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { upsertMapping } from '../store/slice';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { ALL_ROLES, ROLE_LABELS, type RoleType } from '@/config/roles';
 
 export function KpiLinkingPage() {
   const dispatch = useAppDispatch();
@@ -34,7 +35,7 @@ export function KpiLinkingPage() {
     );
   }
 
-  const roleOptions = Array.from(new Set(mappings.map((m) => m.role)));
+  const roleOptions = ALL_ROLES;
 
   return (
     <div className="space-y-4">
@@ -50,7 +51,7 @@ export function KpiLinkingPage() {
           >
             {roleOptions.map((role) => (
               <option key={role} value={role}>
-                {role}
+                {ROLE_LABELS[role as RoleType]}
               </option>
             ))}
           </select>
@@ -69,7 +70,7 @@ export function KpiLinkingPage() {
                   checked={checked}
                   onChange={() => toggleKpiKey(kpi.key)}
                 />
-                <span>{kpi.label}</span>
+                <span>{kpi.nameEn}</span>
               </label>
             );
           })}
@@ -80,7 +81,9 @@ export function KpiLinkingPage() {
         <h2 className="font-semibold text-sm">Current mapping status</h2>
         {mappings.map((m) => (
           <div key={m.id} className="border rounded p-2 text-sm">
-            <span className="font-medium">{m.role}</span>: {m.kpiKeys.join(', ')}
+            <span className="font-medium">{ROLE_LABELS[m.role as RoleType] ?? m.role}</span>:
+            {' '}
+            {m.kpiKeys.join(', ') || 'No KPIs mapped'}
           </div>
         ))}
       </section>
