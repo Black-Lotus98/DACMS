@@ -1,5 +1,14 @@
 import { RoleType, ClearanceLevel, RoleAssignmentType } from '../types';
-import type { AccessLog, Permission, PermissionGroup, PasswordPolicy, RoleEntity, UserEntity } from '../types';
+import type {
+  AccessLog,
+  LdapConfig,
+  LocationAccessRule,
+  Permission,
+  PermissionGroup,
+  PasswordPolicy,
+  RoleEntity,
+  UserEntity,
+} from '../types';
 
 // ─── permissions ────────────────────────────────────────────────────────────
 
@@ -74,6 +83,7 @@ export const rolesSeed: RoleEntity[] = [
     assignmentType: RoleAssignmentType.OnePerOrg,
     description: 'Top-level authority over the entire document and archive centre.',
     permissionKeys: permissionsSeed.map((p) => p.permKey),
+    permissionGroupIds: ['pg3'],
   },
   {
     id: 'r2',
@@ -83,6 +93,7 @@ export const rolesSeed: RoleEntity[] = [
     assignmentType: RoleAssignmentType.OnePerDept,
     description: 'Oversees daily archive operations and approves lending and destruction.',
     permissionKeys: permissionGroupsSeed[1].permissionKeys,
+    permissionGroupIds: ['pg2'],
   },
   {
     id: 'r3',
@@ -92,6 +103,7 @@ export const rolesSeed: RoleEntity[] = [
     assignmentType: RoleAssignmentType.MultiUser,
     description: 'Registers, moves, and manages physical records.',
     permissionKeys: permissionGroupsSeed[0].permissionKeys,
+    permissionGroupIds: ['pg1'],
   },
   {
     id: 'r4',
@@ -101,6 +113,7 @@ export const rolesSeed: RoleEntity[] = [
     assignmentType: RoleAssignmentType.OnePerOrg,
     description: 'Full system access including user management and security configuration.',
     permissionKeys: permissionsSeed.map((p) => p.permKey),
+    permissionGroupIds: ['pg3'],
   },
   {
     id: 'r5',
@@ -110,6 +123,7 @@ export const rolesSeed: RoleEntity[] = [
     assignmentType: RoleAssignmentType.MultiUser,
     description: 'External user who can submit lending requests via the public portal.',
     permissionKeys: ['search.basic', 'lending.create', 'lending.view'],
+    permissionGroupIds: [],
   },
 ];
 
@@ -124,7 +138,9 @@ export const usersSeed: UserEntity[] = [
     email: 'admin@dacms.gov',
     clearanceLevel: ClearanceLevel.TopSecret,
     roleIds: ['r4'],
+    permissionGroupIds: ['pg3'],
     isActive: true,
+    authSource: 'LOCAL',
     lastLogin: '2026-04-30T08:00:00Z',
   },
   {
@@ -136,7 +152,9 @@ export const usersSeed: UserEntity[] = [
     deptId: 'dept-1',
     clearanceLevel: ClearanceLevel.Confidential,
     roleIds: ['r2'],
+    permissionGroupIds: ['pg2'],
     isActive: true,
+    authSource: 'LOCAL',
     lastLogin: '2026-04-30T09:15:00Z',
   },
   {
@@ -148,7 +166,9 @@ export const usersSeed: UserEntity[] = [
     deptId: 'dept-1',
     clearanceLevel: ClearanceLevel.Restricted,
     roleIds: ['r3'],
+    permissionGroupIds: ['pg1'],
     isActive: true,
+    authSource: 'LOCAL',
     lastLogin: '2026-04-29T14:00:00Z',
   },
   {
@@ -159,7 +179,9 @@ export const usersSeed: UserEntity[] = [
     email: 'director@dacms.gov',
     clearanceLevel: ClearanceLevel.TopSecret,
     roleIds: ['r1'],
+    permissionGroupIds: ['pg3'],
     isActive: true,
+    authSource: 'LDAP',
     lastLogin: '2026-04-28T11:30:00Z',
   },
   {
@@ -171,7 +193,9 @@ export const usersSeed: UserEntity[] = [
     deptId: 'dept-2',
     clearanceLevel: ClearanceLevel.Restricted,
     roleIds: ['r3'],
+    permissionGroupIds: ['pg1'],
     isActive: false,
+    authSource: 'LOCAL',
     lastLogin: '2026-04-10T10:00:00Z',
   },
 ];
@@ -195,4 +219,16 @@ export const defaultPasswordPolicy: PasswordPolicy = {
   requireSymbols:    false,
   expiryDays:        90,
   maxFailedAttempts: 5,
+};
+
+export const locationAccessRulesSeed: LocationAccessRule[] = [
+  { id: 'lar-1', scopeType: 'ROOM', scopeId: 'R01', roleIds: ['r1', 'r2', 'r3'] },
+  { id: 'lar-2', scopeType: 'SHELF', scopeId: 'SH-A-01', departmentIds: ['dept-1'] },
+];
+
+export const defaultLdapConfig: LdapConfig = {
+  enabled: false,
+  serverUrl: 'ldap://directory.gov.local:389',
+  baseDn: 'dc=dacms,dc=gov,dc=local',
+  bindUser: 'cn=service-account,ou=system,dc=dacms,dc=gov,dc=local',
 };

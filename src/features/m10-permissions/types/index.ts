@@ -31,6 +31,7 @@ export interface RoleEntity {
   assignmentType: RoleAssignmentType;
   description?: string;
   permissionKeys: string[];
+  permissionGroupIds?: string[];
 }
 
 export interface UserEntity {
@@ -42,9 +43,15 @@ export interface UserEntity {
   deptId?: string;
   branchId?: string;
   roleIds: string[];
+  permissionGroupIds?: string[];
   clearanceLevel: ClearanceLevel;
   isActive: boolean;
   lastLogin?: string;
+  temporaryPassword?: string;
+  mustChangePassword?: boolean;
+  welcomeEmailSentAt?: string;
+  departmentFolderIds?: string[];
+  authSource?: 'LOCAL' | 'LDAP';
 }
 
 export interface AccessLog {
@@ -66,6 +73,21 @@ export interface PasswordPolicy {
   maxFailedAttempts: number;
 }
 
+export interface LocationAccessRule {
+  id: string;
+  scopeType: 'ROOM' | 'SHELF';
+  scopeId: string;
+  roleIds?: string[];
+  departmentIds?: string[];
+}
+
+export interface LdapConfig {
+  enabled: boolean;
+  serverUrl?: string;
+  baseDn?: string;
+  bindUser?: string;
+}
+
 export interface PermissionsState {
   users: UserEntity[];
   roles: RoleEntity[];
@@ -73,4 +95,6 @@ export interface PermissionsState {
   permissionGroups: PermissionGroup[];
   accessLogs: AccessLog[];
   passwordPolicy: PasswordPolicy;
+  locationAccessRules: LocationAccessRule[];
+  ldapConfig: LdapConfig;
 }

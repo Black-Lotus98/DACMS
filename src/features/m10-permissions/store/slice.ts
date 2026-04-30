@@ -1,6 +1,24 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { accessLogsSeed, defaultPasswordPolicy, permissionGroupsSeed, permissionsSeed, rolesSeed, usersSeed } from '../data';
-import type { AccessLog, PasswordPolicy, PermissionGroup, PermissionsState, RoleEntity, UserEntity } from '../types';
+import {
+  accessLogsSeed,
+  defaultLdapConfig,
+  defaultPasswordPolicy,
+  locationAccessRulesSeed,
+  permissionGroupsSeed,
+  permissionsSeed,
+  rolesSeed,
+  usersSeed,
+} from '../data';
+import type {
+  AccessLog,
+  LdapConfig,
+  LocationAccessRule,
+  PasswordPolicy,
+  PermissionGroup,
+  PermissionsState,
+  RoleEntity,
+  UserEntity,
+} from '../types';
 
 const initialState: PermissionsState = {
   users:            usersSeed,
@@ -9,6 +27,8 @@ const initialState: PermissionsState = {
   permissionGroups: permissionGroupsSeed,
   accessLogs:       accessLogsSeed,
   passwordPolicy:   defaultPasswordPolicy,
+  locationAccessRules: locationAccessRulesSeed,
+  ldapConfig: defaultLdapConfig,
 };
 
 const permissionsSlice = createSlice({
@@ -58,6 +78,30 @@ const permissionsSlice = createSlice({
     },
     deletePermissionGroup(state, action: PayloadAction<string>) {
       state.permissionGroups = state.permissionGroups.filter((g) => g.id !== action.payload);
+      state.roles = state.roles.map((r) => ({
+        ...r,
+        permissionGroupIds: (r.permissionGroupIds ?? []).filter((id) => id !== action.payload),
+      }));
+      state.users = state.users.map((u) => ({
+        ...u,
+        permissionGroupIds: (u.permissionGroupIds ?? []).filter((id) => id !== action.payload),
+      }));
+    },
+    assignPermissionGroupToRole(state, action: PayloadAction<{ roleId: string; groupId: string }>) {
+      const role = state.roles.find((r) => r.id === action.payload.roleId);
+      if (!role) return;
+      const current = new Set(role.permissionGroupIds ?? []);
+      if (current.has(action.payload.groupId)) current.delete(action.payload.groupId);
+      else current.add(action.payload.groupId);
+      role.permissionGroupIds = Array.from(current);
+    },
+    assignPermissionGroupToUser(state, action: PayloadAction<{ userId: string; groupId: string }>) {
+      const user = state.users.find((u) => u.id === action.payload.userId);
+      if (!user) return;
+      const current = new Set(user.permissionGroupIds ?? []);
+      if (current.has(action.payload.groupId)) current.delete(action.payload.groupId);
+      else current.add(action.payload.groupId);
+      user.permissionGroupIds = Array.from(current);
     },
 
     // ── access log (F10.6) ─────────────────────────────────────────────────
@@ -69,6 +113,17 @@ const permissionsSlice = createSlice({
     updatePasswordPolicy(state, action: PayloadAction<PasswordPolicy>) {
       state.passwordPolicy = action.payload;
     },
+    upsertLocationAccessRule(state, action: PayloadAction<LocationAccessRule>) {
+      const idx = state.locationAccessRules.findIndex((r) => r.id === action.payload.id);
+      if (idx !== -1) state.locationAccessRules[idx] = action.payload;
+      else state.locationAccessRules.unshift(action.payload);
+    },
+    deleteLocationAccessRule(state, action: PayloadAction<string>) {
+      state.locationAccessRules = state.locationAccessRules.filter((r) => r.id !== action.payload);
+    },
+    updateLdapConfig(state, action: PayloadAction<LdapConfig>) {
+      state.ldapConfig = action.payload;
+    },
   },
 });
 
@@ -76,8 +131,10 @@ export const {
   addUser, editUser, toggleUserActive,
   setUserRoles, addRole, editRole, toggleRolePermission,
   addPermissionGroup, updatePermissionGroup, deletePermissionGroup,
+  assignPermissionGroupToRole, assignPermissionGroupToUser,
   addAccessLog,
   updatePasswordPolicy,
+  upsertLocationAccessRule, deleteLocationAccessRule, updateLdapConfig,
 } = permissionsSlice.actions;
 
 export default permissionsSlice.reducer;

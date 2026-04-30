@@ -4,10 +4,17 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useAppDispatch } from '@/store/hooks';
-import { addUser, toggleUserActive, setUserRoles } from '../store/slice';
+import {
+  addAccessLog,
+  addUser,
+  assignPermissionGroupToRole,
+  assignPermissionGroupToUser,
+  setUserRoles,
+  toggleUserActive,
+  upsertLocationAccessRule,
+} from '../store/slice';
 import { usePermissionsModule } from '../hooks';
 import { ClearanceLevel, RoleAssignmentType, type UserEntity } from '../types';
-import { ALL_ROLES, ROLE_LABELS } from '@/config/roles';
 
 const CLEARANCE_COLOR: Record<ClearanceLevel, string> = {
   [ClearanceLevel.TopSecret]:   'bg-red-100 text-red-800',
@@ -27,9 +34,10 @@ type Tab = 'users' | 'roles' | 'groups' | 'logs';
 export function PermissionsPage() {
   const dispatch = useAppDispatch();
   const { local } = useParams<{ local: string }>();
-  const { users, roles, permissions, permissionGroups, accessLogs, getUsersByRole } = usePermissionsModule();
+  const { users, roles, permissions, permissionGroups, accessLogs, getUsersByRole, locationAccessRules, ldapConfig } = usePermissionsModule();
   const [tab, setTab] = useState<Tab>('users');
   const [showAddUser, setShowAddUser] = useState(false);
+  const [userError, setUserError] = useState('');
 
   // add-user form state
   const [form, setForm] = useState({
@@ -41,14 +49,35 @@ export function PermissionsPage() {
 
   function handleAddUser() {
     if (!form.username || !form.nameEn || !form.email || form.roleIds.length === 0) return;
+    const usernameExists = users.some((u) => u.username.toLowerCase() === form.username.trim().toLowerCase());
+    const emailExists = users.some((u) => u.email.toLowerCase() === form.email.trim().toLowerCase());
+    if (usernameExists || emailExists) {
+      setUserError(usernameExists ? 'Username already exists.' : 'Email already exists.');
+      return;
+    }
+    setUserError('');
+    const temporaryPassword = `Tmp#${Math.random().toString(36).slice(2, 8)}A1`;
     const newUser: UserEntity = {
       id: `u-${Date.now()}`,
       ...form,
       deptId:   form.deptId   || undefined,
       branchId: form.branchId || undefined,
       isActive: true,
+      temporaryPassword,
+      mustChangePassword: true,
+      welcomeEmailSentAt: new Date().toISOString(),
+      departmentFolderIds: form.deptId ? [`folder-${form.deptId}`] : [],
+      authSource: ldapConfig.enabled ? 'LDAP' : 'LOCAL',
     };
     dispatch(addUser(newUser));
+    dispatch(addAccessLog({
+      id: `al-${Date.now()}`,
+      userId: 'u1',
+      action: 'CREATE_USER',
+      entityType: 'User',
+      entityId: newUser.id,
+      timestamp: new Date().toISOString(),
+    }));
     setForm({ username: '', nameAr: '', nameEn: '', email: '', deptId: '', branchId: '', clearanceLevel: ClearanceLevel.Restricted, roleIds: [] });
     setShowAddUser(false);
   }
@@ -153,6 +182,7 @@ export function PermissionsPage() {
                   ))}
                 </div>
               </div>
+              {userError && <p className="text-xs text-red-600">{userError}</p>}
               <button
                 onClick={handleAddUser}
                 disabled={!form.username || !form.nameEn || !form.email || form.roleIds.length === 0}
@@ -195,6 +225,26 @@ export function PermissionsPage() {
                           ) : null;
                         })}
                       </div>
+                      <select
+                        value={u.roleIds[0] ?? ''}
+                        onChange={(e) => {
+                          if (!e.target.value) return;
+                          dispatch(setUserRoles({ userId: u.id, roleIds: [e.target.value] }));
+                          dispatch(addAccessLog({
+                            id: `al-${Date.now()}`,
+                            userId: 'u1',
+                            action: 'REASSIGN_ROLE',
+                            entityType: 'User',
+                            entityId: u.id,
+                            timestamp: new Date().toISOString(),
+                          }));
+                        }}
+                        className="mt-1 h-7 rounded-md border px-2 text-xs"
+                      >
+                        {roles.map((r) => (
+                          <option key={r.id} value={r.id}>{r.nameEn}</option>
+                        ))}
+                      </select>
                     </td>
                     <td className="p-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${CLEARANCE_COLOR[u.clearanceLevel]}`}>
@@ -203,6 +253,7 @@ export function PermissionsPage() {
                     </td>
                     <td className="p-3 text-xs text-muted-foreground">
                       {u.lastLogin ? new Date(u.lastLogin).toLocaleString() : '—'}
+                      {u.mustChangePassword && <p className="text-amber-700">Must change password</p>}
                     </td>
                     <td className="p-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${u.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
@@ -273,14 +324,54 @@ export function PermissionsPage() {
                   );
                 })}
               </div>
+              <div className="text-xs text-muted-foreground space-y-1">
+                <p>Assignment (propagates through effective-permissions):</p>
+                <div className="flex flex-wrap gap-2">
+                  {roles.map((r) => (
+                    <button key={`${g.id}-${r.id}`} onClick={() => dispatch(assignPermissionGroupToRole({ roleId: r.id, groupId: g.id }))} className="h-7 px-2 rounded border hover:bg-muted">
+                      Toggle role: {r.nameEn}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {users.slice(0, 3).map((u) => (
+                    <button key={`${g.id}-${u.id}`} onClick={() => dispatch(assignPermissionGroupToUser({ userId: u.id, groupId: g.id }))} className="h-7 px-2 rounded border hover:bg-muted">
+                      Toggle user: {u.nameEn}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
+          <section className="rounded-xl border bg-background p-4 space-y-2">
+            <h3 className="font-semibold text-sm">Archive location access (F10.5)</h3>
+            {locationAccessRules.map((rule) => (
+              <p key={rule.id} className="text-xs border rounded p-2">
+                {rule.scopeType} {rule.scopeId} · roles: {(rule.roleIds ?? []).join(', ') || '—'} · departments: {(rule.departmentIds ?? []).join(', ') || '—'}
+              </p>
+            ))}
+            <button
+              onClick={() => dispatch(upsertLocationAccessRule({
+                id: `lar-${Date.now()}`,
+                scopeType: 'ROOM',
+                scopeId: 'R99',
+                roleIds: ['r2'],
+              }))}
+              className="h-8 px-3 rounded border text-xs hover:bg-muted"
+            >
+              Add sample room rule
+            </button>
+          </section>
         </div>
       )}
 
       {/* ── Access Log tab — F10.6 ── */}
       {tab === 'logs' && (
-        <div className="rounded-xl border bg-background overflow-x-auto">
+        <div className="space-y-3">
+          <div className="rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">
+            LDAP/AD integration (F10.7 prototype): {ldapConfig.enabled ? 'Enabled' : 'Disabled'} {ldapConfig.serverUrl ? `· ${ldapConfig.serverUrl}` : ''}
+          </div>
+          <div className="rounded-xl border bg-background overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="border-b text-left text-muted-foreground text-xs">
               <th className="p-3">Timestamp</th>
@@ -311,6 +402,7 @@ export function PermissionsPage() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>
