@@ -2,12 +2,22 @@ import { useMemo } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { ExecutionStatus, WorkflowStatus, WorkflowType } from '../types';
 
+export type SlaAlert = {
+  executionId: string;
+  workflowId:  string;
+  workflowName: string;
+  stepName:    string;
+  kind:        'BREACHED' | 'APPROACHING';
+  elapsedHours: number;
+  slaHours:    number;
+};
+
 export function useWorkflowModule() {
   const state = useAppSelector((s) => s.workflows);
 
   return useMemo(() => {
     const nowMs = Date.now();
-    const slaAlerts = state.executions.flatMap((exe) => {
+    const slaAlerts = state.executions.flatMap<SlaAlert>((exe) => {
       if (exe.status !== ExecutionStatus.Running || !exe.currentStepId) return [];
       const wf = state.definitions.find((w) => w.id === exe.wfId);
       const step = wf?.steps.find((s) => s.id === exe.currentStepId);

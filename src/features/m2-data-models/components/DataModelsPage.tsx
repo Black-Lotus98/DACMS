@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Database, FileText, Clock } from 'lucide-react';
+import { Database, FileText, Clock, Package } from 'lucide-react';
 import { useDataModelsModule } from '../hooks';
 import { ActionAfter, FieldType } from '../types';
 import { useAppDispatch } from '@/store/hooks';
-import { addCategory, addDocumentType, addMetadataField } from '../store/slice';
+import { addBoxTemplate, addCategory, addDocumentType, addMetadataField, addShelfTemplate, deleteBoxTemplate, deleteShelfTemplate } from '../store/slice';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -21,7 +21,7 @@ const ACTION_COLOR: Record<ActionAfter, string> = {
   [ActionAfter.Review]:  'bg-amber-100 text-amber-700',
 };
 
-type Tab = 'types' | 'retention';
+type Tab = 'types' | 'retention' | 'templates';
 
 const INPUT = 'w-full h-9 rounded-md border px-3 text-sm';
 const BTN   = 'h-9 px-3 rounded-md border text-sm hover:bg-muted';
@@ -49,7 +49,23 @@ export function DataModelsPage() {
   const [fieldType,    setFieldType]    = useState<FieldType>(FieldType.Text);
   const [fieldRequired, setFieldRequired] = useState(false);
 
-  const { documentTypes, retentionPolicies, getPolicyByDocTypeId, getCategoriesForType, getFieldsForType } =
+  // Box template form
+  const [btNameAr,    setBtNameAr]    = useState('');
+  const [btNameEn,    setBtNameEn]    = useState('');
+  const [btCode,      setBtCode]      = useState('');
+  const [btWidth,     setBtWidth]     = useState('40');
+  const [btHeight,    setBtHeight]    = useState('30');
+  const [btDepth,     setBtDepth]     = useState('25');
+  const [btMaxDocs,   setBtMaxDocs]   = useState('500');
+
+  // Shelf template form
+  const [stNameAr,    setStNameAr]    = useState('');
+  const [stNameEn,    setStNameEn]    = useState('');
+  const [stCode,      setStCode]      = useState('');
+  const [stSlots,     setStSlots]     = useState('10');
+  const [stBoxTplId,  setStBoxTplId]  = useState('');
+
+  const { documentTypes, retentionPolicies, getPolicyByDocTypeId, getCategoriesForType, getFieldsForType, boxTemplates, shelfTemplates, getBoxTemplateById } =
     useDataModelsModule();
 
   const activeTypeId = selectedTypeId || documentTypes[0]?.id || '';
@@ -79,6 +95,28 @@ export function DataModelsPage() {
     setCatNameAr(''); setCatNameEn(''); setCatCode('');
   }
 
+  function createBoxTemplate() {
+    if (!btNameAr.trim() || !btNameEn.trim() || !btCode.trim()) return;
+    dispatch(addBoxTemplate({
+      id: `bt-${Date.now()}`,
+      nameAr: btNameAr.trim(), nameEn: btNameEn.trim(), code: btCode.trim(),
+      widthCm: Number(btWidth), heightCm: Number(btHeight), depthCm: Number(btDepth),
+      maxDocs: Number(btMaxDocs),
+    }));
+    setBtNameAr(''); setBtNameEn(''); setBtCode('');
+  }
+
+  function createShelfTemplate() {
+    if (!stNameAr.trim() || !stNameEn.trim() || !stCode.trim()) return;
+    dispatch(addShelfTemplate({
+      id: `st-${Date.now()}`,
+      nameAr: stNameAr.trim(), nameEn: stNameEn.trim(), code: stCode.trim(),
+      slots: Number(stSlots),
+      boxTemplateId: stBoxTplId || undefined,
+    }));
+    setStNameAr(''); setStNameEn(''); setStCode(''); setStBoxTplId('');
+  }
+
   function createMetadataField() {
     if (!activeTypeId || !fieldLabelAr.trim() || !fieldLabelEn.trim() || !fieldKey.trim()) return;
     dispatch(addMetadataField({
@@ -104,7 +142,7 @@ export function DataModelsPage() {
       </div>
 
       <div className="flex gap-1 p-1 rounded-lg bg-muted w-fit">
-        {([['types', 'Document types', FileText], ['retention', 'Retention policies', Clock]] as const).map(
+        {([['types', 'Document types', FileText], ['retention', 'Retention policies', Clock], ['templates', 'Templates', Package]] as const).map(
           ([key, label, Icon]) => (
             <button
               key={key}
@@ -228,6 +266,80 @@ export function DataModelsPage() {
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {tab === 'templates' && (
+        <div className="space-y-6">
+          {/* Box templates (F2.7) */}
+          <section className="rounded-xl border bg-background p-4 space-y-4">
+            <h3 className="font-semibold text-sm">Box templates (F2.7)</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
+              <input value={btNameAr}  onChange={(e) => setBtNameAr(e.target.value)}  placeholder="الاسم بالعربي" dir="rtl" className={INPUT} />
+              <input value={btNameEn}  onChange={(e) => setBtNameEn(e.target.value)}  placeholder="Name (EN)"     className={INPUT} />
+              <input value={btCode}    onChange={(e) => setBtCode(e.target.value)}    placeholder="Code"          className={`${INPUT} font-mono`} />
+              <div className="grid grid-cols-4 gap-1">
+                <input value={btWidth}   onChange={(e) => setBtWidth(e.target.value)}   placeholder="W cm" className={INPUT} type="number" />
+                <input value={btHeight}  onChange={(e) => setBtHeight(e.target.value)}  placeholder="H cm" className={INPUT} type="number" />
+                <input value={btDepth}   onChange={(e) => setBtDepth(e.target.value)}   placeholder="D cm" className={INPUT} type="number" />
+                <input value={btMaxDocs} onChange={(e) => setBtMaxDocs(e.target.value)} placeholder="Max"  className={INPUT} type="number" />
+              </div>
+            </div>
+            <button onClick={createBoxTemplate} className={BTN}>Add box template</button>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 border-t pt-4">
+              {boxTemplates.map((bt) => (
+                <div key={bt.id} className="rounded-lg border p-3 text-sm space-y-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-medium">{bt.nameEn}</p>
+                      <p className="text-xs text-muted-foreground" dir="rtl">{bt.nameAr}</p>
+                      <p className="font-mono text-xs text-muted-foreground">{bt.code}</p>
+                    </div>
+                    <button onClick={() => dispatch(deleteBoxTemplate(bt.id))} className="text-xs text-red-500 hover:underline shrink-0">Remove</button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{bt.widthCm}×{bt.heightCm}×{bt.depthCm} cm · max {bt.maxDocs} docs</p>
+                  {bt.description && <p className="text-xs text-muted-foreground">{bt.description}</p>}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Shelf templates (F2.8) */}
+          <section className="rounded-xl border bg-background p-4 space-y-4">
+            <h3 className="font-semibold text-sm">Shelf templates (F2.8)</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-2">
+              <input value={stNameAr} onChange={(e) => setStNameAr(e.target.value)} placeholder="الاسم بالعربي" dir="rtl" className={INPUT} />
+              <input value={stNameEn} onChange={(e) => setStNameEn(e.target.value)} placeholder="Name (EN)"     className={INPUT} />
+              <input value={stCode}   onChange={(e) => setStCode(e.target.value)}   placeholder="Code"          className={`${INPUT} font-mono`} />
+              <input value={stSlots}  onChange={(e) => setStSlots(e.target.value)}  placeholder="Slots"         className={INPUT} type="number" />
+              <select value={stBoxTplId} onChange={(e) => setStBoxTplId(e.target.value)} className={INPUT}>
+                <option value="">Box template (opt.)</option>
+                {boxTemplates.map((bt) => <option key={bt.id} value={bt.id}>{bt.nameEn}</option>)}
+              </select>
+            </div>
+            <button onClick={createShelfTemplate} className={BTN}>Add shelf template</button>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 border-t pt-4">
+              {shelfTemplates.map((st) => {
+                const boxTpl = st.boxTemplateId ? getBoxTemplateById(st.boxTemplateId) : null;
+                return (
+                  <div key={st.id} className="rounded-lg border p-3 text-sm space-y-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="font-medium">{st.nameEn}</p>
+                        <p className="text-xs text-muted-foreground" dir="rtl">{st.nameAr}</p>
+                        <p className="font-mono text-xs text-muted-foreground">{st.code}</p>
+                      </div>
+                      <button onClick={() => dispatch(deleteShelfTemplate(st.id))} className="text-xs text-red-500 hover:underline shrink-0">Remove</button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{st.slots} slots{boxTpl ? ` · ${boxTpl.nameEn}` : ''}</p>
+                    {st.description && <p className="text-xs text-muted-foreground">{st.description}</p>}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 import {
-  DispatchDirection, ItemStatus, LendingStatus,
-  type LendingItem, type LendingRequest, type MessengerDispatch,
+  DispatchDirection, ExtensionStatus, ItemStatus, LendingStatus,
+  type ExtensionRequest, type LendingItem, type LendingRequest, type MessengerDispatch,
 } from '../types';
 
 export const lendingRequestsSeed: LendingRequest[] = [
@@ -72,5 +72,17 @@ export const dispatchesSeed: MessengerDispatch[] = [
     messengerId:  'messenger1',
     direction:    DispatchDirection.Inbound,
     dispatchedAt: '2026-05-04T14:00:00Z',
+  },
+];
+
+export const extensionRequestsSeed: ExtensionRequest[] = [
+  {
+    id:          'ext1',
+    requestId:   'lr3',
+    requestedBy: 'user5',
+    newDueDate:  '2026-05-10',
+    reason:      'Audit scope extended by management directive.',
+    status:      ExtensionStatus.Pending,
+    createdAt:   '2026-04-19T10:00:00Z',
   },
 ];

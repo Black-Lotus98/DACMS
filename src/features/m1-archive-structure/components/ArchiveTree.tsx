@@ -61,7 +61,7 @@ function RowNode({ row, cabinets, shelves, boxes }: { row: ArchiveRow; cabinets:
 }
 
 export function ArchiveTree() {
-  const { rooms, rows, cabinets, shelves, boxes, roomOccupancy } = useArchiveModule();
+  const { rooms, rows, cabinets, shelves, boxes, roomOccupancy, thresholds } = useArchiveModule();
   const [openRooms, setOpenRooms] = useState<Set<string>>(new Set(['rm1']));
 
   const toggle = (id: string) =>
@@ -92,7 +92,7 @@ export function ArchiveTree() {
               {open ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
               <span className="flex-1 text-start">{room.nameAr}</span>
               <span className="text-xs font-mono text-muted-foreground font-normal">{room.code}</span>
-              <span className={`text-xs font-normal ms-2 ${pct >= 90 ? 'text-red-500' : pct >= 70 ? 'text-amber-500' : 'text-green-600'}`}>
+              <span className={`text-xs font-normal ms-2 ${pct >= thresholds.critical ? 'text-red-500' : pct >= thresholds.warning ? 'text-amber-500' : 'text-green-600'}`}>
                 {pct}%
               </span>
             </button>

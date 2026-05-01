@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAppSelector } from '@/store/hooks';
 
 export function useDataModelsModule() {
-  const { documentTypes, categories, metadataFields, retentionPolicies, optionSets } = useAppSelector(
+  const { documentTypes, categories, metadataFields, retentionPolicies, optionSets, boxTemplates, shelfTemplates } = useAppSelector(
     (s) => s.dataModels
   );
 
@@ -12,6 +12,8 @@ export function useDataModelsModule() {
     metadataFields,
     retentionPolicies,
     optionSets,
+    boxTemplates,
+    shelfTemplates,
 
     // Document types
     getDocTypeById: (id: string) => documentTypes.find((d) => d.id === id) ?? null,
@@ -39,5 +41,13 @@ export function useDataModelsModule() {
 
     // Option sets (F2.5)
     getOptionSetById: (id: string) => optionSets.find((o) => o.id === id) ?? null,
-  }), [documentTypes, categories, metadataFields, retentionPolicies, optionSets]);
+
+    // Box templates (F2.7)
+    getBoxTemplateById: (id: string) => boxTemplates.find((b) => b.id === id) ?? null,
+
+    // Shelf templates (F2.8)
+    getShelfTemplateById: (id: string) => shelfTemplates.find((s) => s.id === id) ?? null,
+    getShelfTemplatesByBoxTemplate: (boxTemplateId: string) =>
+      shelfTemplates.filter((s) => s.boxTemplateId === boxTemplateId),
+  }), [documentTypes, categories, metadataFields, retentionPolicies, optionSets, boxTemplates, shelfTemplates]);
 }

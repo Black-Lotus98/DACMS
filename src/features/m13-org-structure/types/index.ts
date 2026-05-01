@@ -1,3 +1,19 @@
+export enum OrgLevel {
+  Supervisory    = 'SUPERVISORY',
+  Operational    = 'OPERATIONAL',
+  Technical      = 'TECHNICAL',
+  Organizational = 'ORGANIZATIONAL',
+}
+
+export interface OrgLevelDefinition {
+  level:       OrgLevel;
+  labelAr:     string;
+  labelEn:     string;
+  roles:       string[];
+  accessSummaryAr: string;
+  accessSummaryEn: string;
+}
+
 export interface Organization {
   id: string;
   nameAr: string;
@@ -26,7 +42,8 @@ export interface Department {
 }
 
 export interface OrgState {
-  organization: Organization;
-  branches: Branch[];
-  departments: Department[];
+  organization:    Organization;
+  branches:        Branch[];
+  departments:     Department[];
+  levelDefinitions: OrgLevelDefinition[];
 }

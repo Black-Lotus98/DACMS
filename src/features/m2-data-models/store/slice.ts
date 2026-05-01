@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { DataModelsState, DocumentCategory, DocumentType, MetadataField, OptionSet, RetentionPolicy } from '../types';
-import { categoriesSeed, documentTypesSeed, metadataFieldsSeed, optionSetsSeed, retentionPoliciesSeed } from '../data';
+import type { BoxTemplate, DataModelsState, DocumentCategory, DocumentType, MetadataField, OptionSet, RetentionPolicy, ShelfTemplate } from '../types';
+import { boxTemplatesSeed, categoriesSeed, documentTypesSeed, metadataFieldsSeed, optionSetsSeed, retentionPoliciesSeed, shelfTemplatesSeed } from '../data';
 
 const initialState: DataModelsState = {
   documentTypes: documentTypesSeed,
@@ -8,6 +8,8 @@ const initialState: DataModelsState = {
   metadataFields: metadataFieldsSeed,
   retentionPolicies: retentionPoliciesSeed,
   optionSets: optionSetsSeed,
+  boxTemplates: boxTemplatesSeed,
+  shelfTemplates: shelfTemplatesSeed,
 };
 
 const dataModelsSlice = createSlice({
@@ -62,6 +64,30 @@ const dataModelsSlice = createSlice({
       const idx = state.optionSets.findIndex((o) => o.id === action.payload.id);
       if (idx !== -1) state.optionSets[idx] = action.payload;
     },
+
+    // --- Box Templates (F2.7) ---
+    addBoxTemplate(state, action: PayloadAction<BoxTemplate>) {
+      state.boxTemplates.push(action.payload);
+    },
+    updateBoxTemplate(state, action: PayloadAction<BoxTemplate>) {
+      const idx = state.boxTemplates.findIndex((b) => b.id === action.payload.id);
+      if (idx !== -1) state.boxTemplates[idx] = action.payload;
+    },
+    deleteBoxTemplate(state, action: PayloadAction<string>) {
+      state.boxTemplates = state.boxTemplates.filter((b) => b.id !== action.payload);
+    },
+
+    // --- Shelf Templates (F2.8) ---
+    addShelfTemplate(state, action: PayloadAction<ShelfTemplate>) {
+      state.shelfTemplates.push(action.payload);
+    },
+    updateShelfTemplate(state, action: PayloadAction<ShelfTemplate>) {
+      const idx = state.shelfTemplates.findIndex((s) => s.id === action.payload.id);
+      if (idx !== -1) state.shelfTemplates[idx] = action.payload;
+    },
+    deleteShelfTemplate(state, action: PayloadAction<string>) {
+      state.shelfTemplates = state.shelfTemplates.filter((s) => s.id !== action.payload);
+    },
   },
 });
 
@@ -71,6 +97,8 @@ export const {
   addMetadataField, updateMetadataField,
   addRetentionPolicy, updateRetentionPolicy,
   addOptionSet, updateOptionSet,
+  addBoxTemplate, updateBoxTemplate, deleteBoxTemplate,
+  addShelfTemplate, updateShelfTemplate, deleteShelfTemplate,
 } = dataModelsSlice.actions;
 
 export default dataModelsSlice.reducer;

@@ -59,10 +59,34 @@ export interface RetentionPolicy {
   legalRef?: string;
 }
 
+export interface BoxTemplate {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  code: string;
+  widthCm: number;
+  heightCm: number;
+  depthCm: number;
+  maxDocs: number;
+  description?: string;
+}
+
+export interface ShelfTemplate {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  code: string;
+  slots: number;
+  boxTemplateId?: string;
+  description?: string;
+}
+
 export interface DataModelsState {
   documentTypes: DocumentType[];
   categories: DocumentCategory[];
   metadataFields: MetadataField[];
   retentionPolicies: RetentionPolicy[];
   optionSets: OptionSet[];
+  boxTemplates: BoxTemplate[];
+  shelfTemplates: ShelfTemplate[];
 }

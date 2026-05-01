@@ -1,13 +1,13 @@
 interface OccupancyBarProps {
-  pct: number;
+  pct:       number;
   showLabel?: boolean;
+  warning?:  number;
+  critical?: number;
 }
 
-export function OccupancyBar({ pct, showLabel = true }: OccupancyBarProps) {
-  const color =
-    pct >= 90 ? 'bg-red-500' : pct >= 70 ? 'bg-amber-400' : 'bg-green-500';
-  const textColor =
-    pct >= 90 ? 'text-red-500' : pct >= 70 ? 'text-amber-500' : 'text-green-600';
+export function OccupancyBar({ pct, showLabel = true, warning = 70, critical = 90 }: OccupancyBarProps) {
+  const color     = pct >= critical ? 'bg-red-500'    : pct >= warning ? 'bg-amber-400'  : 'bg-green-500';
+  const textColor = pct >= critical ? 'text-red-500'  : pct >= warning ? 'text-amber-500': 'text-green-600';
 
   return (
     <div className="space-y-1">

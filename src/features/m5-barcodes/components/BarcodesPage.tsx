@@ -113,7 +113,7 @@ export function BarcodesPage() {
                       }
                     </td>
                     <td className="p-3 text-xs text-muted-foreground">{l.generatedAt.slice(0, 10)}</td>
-                    <td className="p-3 flex gap-2">
+                    <td className="p-3 flex gap-2 flex-wrap">
                       <button
                         onClick={() => setSelectedLabelId(l.id)}
                         className="text-primary hover:underline text-xs"
@@ -121,12 +121,29 @@ export function BarcodesPage() {
                         Preview
                       </button>
                       {l.isActive && (
-                        <button
-                          onClick={() => handleReplace(l.id)}
-                          className="text-amber-600 hover:underline text-xs"
-                        >
-                          Replace
-                        </button>
+                        <>
+                          <button
+                            onClick={() => {
+                              dispatch(addPrintJob({
+                                id:          `pj-${Date.now()}`,
+                                createdBy:   'current-user',
+                                labelIds:    [l.id],
+                                status:      PrintStatus.Queued,
+                                printFormat: 'A4-single',
+                                queuedAt:    new Date().toISOString(),
+                              }));
+                            }}
+                            className="text-green-600 hover:underline text-xs"
+                          >
+                            Print (F5.3)
+                          </button>
+                          <button
+                            onClick={() => handleReplace(l.id)}
+                            className="text-amber-600 hover:underline text-xs"
+                          >
+                            Replace
+                          </button>
+                        </>
                       )}
                     </td>
                   </tr>

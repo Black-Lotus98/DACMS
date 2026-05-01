@@ -1,5 +1,5 @@
 import { ActionAfter, FieldType } from '../types';
-import type { DocumentCategory, DocumentType, MetadataField, OptionSet, RetentionPolicy } from '../types';
+import type { BoxTemplate, DocumentCategory, DocumentType, MetadataField, OptionSet, RetentionPolicy, ShelfTemplate } from '../types';
 
 export const optionSetsSeed: OptionSet[] = [
   { id: 'os1', nameAr: 'مستوى السرية', nameEn: 'Secrecy Level', options: ['عام', 'داخلي', 'سري', 'سري للغاية'] },
@@ -60,4 +60,16 @@ export const metadataFieldsSeed: MetadataField[] = [
   { id: 'mf14', fieldKey: 'service_type',   labelAr: 'نوع الخدمة',         labelEn: 'Service Type',          fieldType: FieldType.Dropdown,    isRequired: true,  docTypeId: 'dt5', optionSetId: 'os2' },
   { id: 'mf15', fieldKey: 'applicant_name', labelAr: 'اسم مقدم الطلب',    labelEn: 'Applicant Name',        fieldType: FieldType.Text,        isRequired: true,  docTypeId: 'dt5' },
   { id: 'mf16', fieldKey: 'id_number',      labelAr: 'رقم الهوية',         labelEn: 'ID Number',             fieldType: FieldType.Text,        isRequired: true,  docTypeId: 'dt5' },
+];
+
+export const boxTemplatesSeed: BoxTemplate[] = [
+  { id: 'bt1', nameAr: 'صندوق قياسي أ', nameEn: 'Standard Box A', code: 'BOX-A', widthCm: 40, heightCm: 30, depthCm: 25, maxDocs: 500 },
+  { id: 'bt2', nameAr: 'صندوق قياسي ب', nameEn: 'Standard Box B', code: 'BOX-B', widthCm: 35, heightCm: 25, depthCm: 20, maxDocs: 350, description: 'For A4 documents only' },
+  { id: 'bt3', nameAr: 'صندوق الأرشيف الكبير', nameEn: 'Large Archive Box', code: 'BOX-L', widthCm: 60, heightCm: 40, depthCm: 30, maxDocs: 1000 },
+];
+
+export const shelfTemplatesSeed: ShelfTemplate[] = [
+  { id: 'st1', nameAr: 'رف قياسي', nameEn: 'Standard Shelf', code: 'SHELF-STD', slots: 10, boxTemplateId: 'bt1' },
+  { id: 'st2', nameAr: 'رف مزدوج', nameEn: 'Double Shelf', code: 'SHELF-DBL', slots: 20, boxTemplateId: 'bt2' },
+  { id: 'st3', nameAr: 'رف الأرشيف الثقيل', nameEn: 'Heavy Archive Shelf', code: 'SHELF-HVY', slots: 6, boxTemplateId: 'bt3', description: 'Reinforced for heavy boxes' },
 ];

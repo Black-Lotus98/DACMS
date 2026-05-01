@@ -46,10 +46,16 @@ export interface ArchiveBox {
   isActive: boolean;
 }
 
+export interface CapacityThresholds {
+  warning:  number;
+  critical: number;
+}
+
 export interface ArchiveStructureState {
-  rooms: ArchiveRoom[];
-  rows: ArchiveRow[];
-  cabinets: ArchiveCabinet[];
-  shelves: ArchiveShelf[];
-  boxes: ArchiveBox[];
+  rooms:      ArchiveRoom[];
+  rows:       ArchiveRow[];
+  cabinets:   ArchiveCabinet[];
+  shelves:    ArchiveShelf[];
+  boxes:      ArchiveBox[];
+  thresholds: CapacityThresholds;
 }

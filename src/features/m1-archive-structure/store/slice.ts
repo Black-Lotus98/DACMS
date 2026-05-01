@@ -1,13 +1,14 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { ArchiveBox, ArchiveCabinet, ArchiveRoom, ArchiveRow, ArchiveShelf, ArchiveStructureState } from '../types';
+import type { ArchiveBox, ArchiveCabinet, ArchiveRoom, ArchiveRow, ArchiveShelf, ArchiveStructureState, CapacityThresholds } from '../types';
 import { boxesSeed, cabinetsSeed, roomsSeed, rowsSeed, shelvesSeed } from '../data';
 
 const initialState: ArchiveStructureState = {
-  rooms: roomsSeed,
-  rows: rowsSeed,
-  cabinets: cabinetsSeed,
-  shelves: shelvesSeed,
-  boxes: boxesSeed,
+  rooms:      roomsSeed,
+  rows:       rowsSeed,
+  cabinets:   cabinetsSeed,
+  shelves:    shelvesSeed,
+  boxes:      boxesSeed,
+  thresholds: { warning: 70, critical: 90 },
 };
 
 const archiveStructureSlice = createSlice({
@@ -97,6 +98,11 @@ const archiveStructureSlice = createSlice({
       const box = state.boxes.find((b) => b.id === action.payload);
       if (box) box.isActive = !box.isActive;
     },
+
+    // --- F1.10: configurable thresholds ---
+    updateThresholds(state, action: PayloadAction<CapacityThresholds>) {
+      state.thresholds = action.payload;
+    },
   },
 });
 
@@ -107,6 +113,7 @@ export const {
   addShelf, updateShelf, updateShelfUsed,
   addBox, updateBox, transferBox, sealBox, unsealBox,
   toggleRoomActive, toggleRowActive, toggleCabinetActive, toggleShelfActive, toggleBoxActive,
+  updateThresholds,
 } = archiveStructureSlice.actions;
 
 export default archiveStructureSlice.reducer;

@@ -22,12 +22,20 @@ export function RecordsPage() {
           <h1 className="text-2xl font-bold">Records & Archiving</h1>
           <p className="text-sm text-muted-foreground">Record registration and location tracking.</p>
         </div>
-        <Link
-          href={`/${local}/records/new`}
-          className="inline-flex h-9 px-4 items-center rounded-md bg-primary text-primary-foreground text-sm font-medium"
-        >
-          New record
-        </Link>
+        <div className="flex gap-2 shrink-0">
+          <Link
+            href={`/${local}/records/import`}
+            className="inline-flex h-9 px-3 items-center rounded-md border text-sm hover:bg-muted"
+          >
+            Import CSV
+          </Link>
+          <Link
+            href={`/${local}/records/new`}
+            className="inline-flex h-9 px-4 items-center rounded-md bg-primary text-primary-foreground text-sm font-medium"
+          >
+            New record
+          </Link>
+        </div>
       </div>
 
       <div className="rounded-xl border bg-background overflow-x-auto">

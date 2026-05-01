@@ -1,4 +1,5 @@
-import type { Branch, Department, Organization } from '../types';
+import type { Branch, Department, Organization, OrgLevelDefinition } from '../types';
+import { OrgLevel } from '../types';
 
 export const orgSeed: Organization = {
   id: 'org1',
@@ -24,4 +25,39 @@ export const departmentsSeed: Department[] = [
   { id: 'd8', nameAr: 'إدارة الأرشيف', nameEn: 'Archive Department', code: 'DMM-ARC', branchId: 'b3' },
   { id: 'd9', nameAr: 'قسم الحفظ', nameEn: 'Preservation Section', code: 'DMM-REC', branchId: 'b3', parentDeptId: 'd8' },
   { id: 'd10', nameAr: 'إدارة الموارد البشرية', nameEn: 'HR Department', code: 'DMM-HR', branchId: 'b3' },
+];
+
+export const levelDefinitionsSeed: OrgLevelDefinition[] = [
+  {
+    level: OrgLevel.Supervisory,
+    labelAr: 'المستوى الإشرافي',
+    labelEn: 'Supervisory Level',
+    roles: ['center_director'],
+    accessSummaryAr: 'مدير المركز — صلاحية كاملة على مؤشرات الأداء والتقارير وجميع السجلات',
+    accessSummaryEn: 'Center Director — full visibility of KPIs, reports, and all records.',
+  },
+  {
+    level: OrgLevel.Operational,
+    labelAr: 'المستوى التشغيلي',
+    labelEn: 'Operational Level',
+    roles: ['archive_supervisor', 'archive_officer'],
+    accessSummaryAr: 'مشرف الأرشيف وموظف الأرشيف — وصول مبني على المهام ومحدود بنطاق الفرع/القسم',
+    accessSummaryEn: 'Archive Supervisor & Officer — task-based access scoped to branch/department.',
+  },
+  {
+    level: OrgLevel.Technical,
+    labelAr: 'المستوى التقني',
+    labelEn: 'Technical Level',
+    roles: ['admin'],
+    accessSummaryAr: 'مدير النظام — صلاحية التهيئة الكاملة؛ بدون وصول تشغيلي افتراضياً (فصل الصلاحيات)',
+    accessSummaryEn: 'System Admin — full configuration access; no operational data access by default.',
+  },
+  {
+    level: OrgLevel.Organizational,
+    labelAr: 'المستوى التنظيمي (المستفيدون)',
+    labelEn: 'Organizational Level (Beneficiary)',
+    roles: ['beneficiary'],
+    accessSummaryAr: 'أقسام المستفيدين — قراءة واستعارة السجلات المرتبطة بقسمهم فقط',
+    accessSummaryEn: 'Beneficiary departments — read and lending access to their own records only.',
+  },
 ];

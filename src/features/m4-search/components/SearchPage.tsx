@@ -84,6 +84,20 @@ export function SearchPage() {
 
   const barcodeResult = barcode ? searchByBarcode(barcode) : null;
 
+  function exportResultsCSV() {
+    if (results.length === 0) return;
+    const header = ['refNo', 'titleEn', 'titleAr', 'status', 'secrecy', 'docTypeId', 'categoryId', 'boxId', 'archiveDate'];
+    const rows = results.map((r) => [
+      r.refNo, r.titleEn, r.titleAr, r.status, r.secrecy,
+      r.docTypeId, r.categoryId, r.boxId, r.archiveDate,
+    ].join(','));
+    const csv = [header.join(','), ...rows].join('\n');
+    const a = document.createElement('a');
+    a.href = `data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`;
+    a.download = `search-results-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -193,10 +207,11 @@ export function SearchPage() {
               <div className="flex items-center justify-between px-4 py-2 border-b">
                 <span className="text-sm font-medium">{results.length} result{results.length !== 1 ? 's' : ''}</span>
                 <button
-                  onClick={() => alert('Export: PDF/Excel export not yet implemented.')}
-                  className={BTN}
+                  onClick={exportResultsCSV}
+                  disabled={results.length === 0}
+                  className={`${BTN} disabled:opacity-50`}
                 >
-                  Export
+                  Export CSV (F4.7)
                 </button>
               </div>
               <table className="w-full text-sm">

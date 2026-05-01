@@ -51,8 +51,28 @@ export interface MessengerDispatch {
   confirmedAt?: string;
 }
 
+export enum ExtensionStatus {
+  Pending  = 'PENDING',
+  Approved = 'APPROVED',
+  Rejected = 'REJECTED',
+}
+
+export interface ExtensionRequest {
+  id:               string;
+  requestId:        string;
+  requestedBy:      string;
+  newDueDate:       string;
+  reason:           string;
+  status:           ExtensionStatus;
+  createdAt:        string;
+  reviewedBy?:      string;
+  reviewedAt?:      string;
+  rejectionReason?: string;
+}
+
 export interface LendingState {
-  requests:  LendingRequest[];
-  items:     LendingItem[];
-  dispatches: MessengerDispatch[];
+  requests:           LendingRequest[];
+  items:              LendingItem[];
+  dispatches:         MessengerDispatch[];
+  extensionRequests:  ExtensionRequest[];
 }

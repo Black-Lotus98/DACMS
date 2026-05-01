@@ -1,12 +1,22 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { moveRecord } from '../store/slice';
 import { useRecordsModule } from '../hooks';
 
 export function RecordDetailPage() {
+  const dispatch = useAppDispatch();
   const { local, id } = useParams<{ local: string; id: string }>();
   const { getRecordById, getHistoryForRecord, getFilesForRecord } = useRecordsModule();
+  const currentUserId = useAppSelector((s) => s.auth.user?.id ?? 'unknown');
+  const boxes = useAppSelector((s) => s.archiveStructure.boxes);
+
+  const [toBox,  setToBox]  = useState('');
+  const [reason, setReason] = useState('');
+  const [moveError, setMoveError] = useState('');
 
   const record  = getRecordById(id);
   const history = getHistoryForRecord(id);
@@ -78,6 +88,42 @@ export function RecordDetailPage() {
             ))}
           </ul>
         )}
+      </section>
+
+      {/* Move record (F3.9) */}
+      <section className="rounded-xl border bg-background p-4 space-y-3">
+        <h2 className="font-semibold text-sm">Move record (F3.9)</h2>
+        <div className="flex gap-2 flex-wrap">
+          <select
+            value={toBox}
+            onChange={(e) => setToBox(e.target.value)}
+            className="h-9 rounded-md border px-2 text-sm flex-1 min-w-40"
+          >
+            <option value="">Select destination box…</option>
+            {boxes.filter((b) => b.isActive && b.id !== record.boxId).map((b) => (
+              <option key={b.id} value={b.id}>{b.code} — {b.label}</option>
+            ))}
+          </select>
+          <input
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Reason for move…"
+            className="h-9 rounded-md border px-3 text-sm flex-1 min-w-48"
+          />
+          <button
+            onClick={() => {
+              if (!toBox) { setMoveError('Select a destination box.'); return; }
+              if (!reason.trim()) { setMoveError('Provide a reason.'); return; }
+              dispatch(moveRecord({ recordId: record.id, toBox, movedBy: currentUserId, reason }));
+              setToBox(''); setReason(''); setMoveError('');
+            }}
+            className="h-9 px-3 rounded-md border text-sm hover:bg-muted"
+          >
+            Move
+          </button>
+        </div>
+        {moveError && <p className="text-xs text-red-600">{moveError}</p>}
+        <p className="text-xs text-muted-foreground">Current box: <span className="font-mono">{record.boxId}</span></p>
       </section>
 
       <section className="rounded-xl border bg-background p-4">

@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addLendingItem, addRequest } from '../store/slice';
 import { ItemStatus, LendingStatus } from '../types';
 import { RecordStatus } from '@/features/m3-records';
+import { useAppSelector as useSelector } from '@/store/hooks';
 
 const INPUT = 'w-full h-9 rounded-md border px-3 text-sm';
 
@@ -14,9 +15,10 @@ export function LendingFormPage() {
   const router   = useRouter();
   const { local } = useParams<{ local: string }>();
 
-  const records        = useAppSelector((s) => s.records.items);
-  const lendingItems   = useAppSelector((s) => s.lending.items);
+  const records         = useAppSelector((s) => s.records.items);
+  const lendingItems    = useAppSelector((s) => s.lending.items);
   const lendingRequests = useAppSelector((s) => s.lending.requests);
+  const retentionPolicies = useSelector((s) => s.dataModels.retentionPolicies);
 
   const [requesterId, setRequesterId] = useState('');
   const [deptId,      setDeptId]      = useState('');
@@ -24,6 +26,19 @@ export function LendingFormPage() {
   const [dueDate,     setDueDate]     = useState('');
   const [recordId,    setRecordId]    = useState('');
   const [error,       setError]       = useState('');
+
+  function onRecordIdChange(val: string) {
+    setRecordId(val);
+    const record = records.find((r) => r.id === val || r.refNo === val);
+    if (record) {
+      const policy = retentionPolicies.find((p) => p.docTypeId === record.docTypeId);
+      if (policy) {
+        const today = new Date();
+        today.setFullYear(today.getFullYear() + policy.periodYears);
+        setDueDate(today.toISOString().slice(0, 10));
+      }
+    }
+  }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -93,7 +108,7 @@ export function LendingFormPage() {
 
         <div>
           <label className="text-sm mb-1 block">Record ID or reference</label>
-          <input required value={recordId} onChange={(e) => setRecordId(e.target.value)} placeholder="e.g. rec1 or REC-2026-00001" className={`${INPUT} font-mono`} />
+          <input required value={recordId} onChange={(e) => onRecordIdChange(e.target.value)} placeholder="e.g. rec1 or REC-2026-00001" className={`${INPUT} font-mono`} />
         </div>
 
         <div>
@@ -102,8 +117,9 @@ export function LendingFormPage() {
         </div>
 
         <div>
-          <label className="text-sm mb-1 block">Due date (optional)</label>
+          <label className="text-sm mb-1 block">Due date (F6.6 — auto-filled from retention policy)</label>
           <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className={INPUT} />
+          {dueDate && <p className="text-xs text-muted-foreground mt-0.5">Auto-calculated from document type retention policy. You can override.</p>}
         </div>
 
         <button type="submit" className="inline-flex h-9 px-4 items-center rounded-md bg-primary text-primary-foreground text-sm font-medium">

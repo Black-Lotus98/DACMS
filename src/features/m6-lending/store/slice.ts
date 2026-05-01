@@ -1,14 +1,15 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { dispatchesSeed, lendingItemsSeed, lendingRequestsSeed } from '../data';
+import { dispatchesSeed, extensionRequestsSeed, lendingItemsSeed, lendingRequestsSeed } from '../data';
 import {
-  DispatchDirection, ItemStatus, LendingStatus,
-  type LendingItem, type LendingRequest, type LendingState, type MessengerDispatch,
+  DispatchDirection, ExtensionStatus, ItemStatus, LendingStatus,
+  type ExtensionRequest, type LendingItem, type LendingRequest, type LendingState, type MessengerDispatch,
 } from '../types';
 
 const initialState: LendingState = {
-  requests:  lendingRequestsSeed,
-  items:     lendingItemsSeed,
-  dispatches: dispatchesSeed,
+  requests:          lendingRequestsSeed,
+  items:             lendingItemsSeed,
+  dispatches:        dispatchesSeed,
+  extensionRequests: extensionRequestsSeed,
 };
 
 const lendingSlice = createSlice({
@@ -123,6 +124,37 @@ const lendingSlice = createSlice({
         }
       });
     },
+
+    // --- Extension requests (F6.8) ---
+    addExtensionRequest(state, action: PayloadAction<ExtensionRequest>) {
+      state.extensionRequests.push(action.payload);
+    },
+
+    approveExtension(
+      state,
+      action: PayloadAction<{ extensionId: string; reviewedBy: string }>
+    ) {
+      const ext = state.extensionRequests.find((e) => e.id === action.payload.extensionId);
+      if (!ext || ext.status !== ExtensionStatus.Pending) return;
+      ext.status     = ExtensionStatus.Approved;
+      ext.reviewedBy = action.payload.reviewedBy;
+      ext.reviewedAt = new Date().toISOString();
+      // Apply the new due date to the parent request
+      const req = state.requests.find((r) => r.id === ext.requestId);
+      if (req) req.dueDate = ext.newDueDate;
+    },
+
+    rejectExtension(
+      state,
+      action: PayloadAction<{ extensionId: string; reviewedBy: string; rejectionReason: string }>
+    ) {
+      const ext = state.extensionRequests.find((e) => e.id === action.payload.extensionId);
+      if (!ext || ext.status !== ExtensionStatus.Pending) return;
+      ext.status          = ExtensionStatus.Rejected;
+      ext.reviewedBy      = action.payload.reviewedBy;
+      ext.reviewedAt      = new Date().toISOString();
+      ext.rejectionReason = action.payload.rejectionReason;
+    },
   },
 });
 
@@ -131,5 +163,6 @@ export const {
   approveRequest, rejectRequest, dispatchRequest, activateRequest,
   confirmReturn, confirmDispatch, updateLendingItemStatus,
   refreshOverdue,
+  addExtensionRequest, approveExtension, rejectExtension,
 } = lendingSlice.actions;
 export default lendingSlice.reducer;
