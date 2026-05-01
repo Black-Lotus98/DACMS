@@ -110,6 +110,12 @@ export const navigationConfig: NavItem[] = [
     href: '/workflow',
     icon: 'GitBranch',
     roles: STAFF,
+    children: [
+      { key: 'workflow-tasks',      label: 'My Tasks',     href: '/workflow/my-tasks',   icon: 'ClipboardList', roles: STAFF },
+      { key: 'workflow-executions', label: 'Executions',   href: '/workflow/executions', icon: 'Play',          roles: STAFF },
+      { key: 'workflow-analytics',  label: 'Analytics',    href: '/workflow/analytics',  icon: 'BarChart2',     roles: MANAGEMENT },
+      { key: 'workflow-new',        label: 'New Workflow',  href: '/workflow/new',        icon: 'Plus',          roles: [RoleType.Admin] },
+    ],
   },
   {
     key: 'kpi-linking',

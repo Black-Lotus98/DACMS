@@ -7,6 +7,7 @@ export interface User {
   role: RoleType;
   clearanceLevel: ClearanceLevel;
   departmentId?: string;
+  userDepartments: string[];   // dept IDs this user belongs to (for workflow task matching)
 }
 
 export interface AuthSession {

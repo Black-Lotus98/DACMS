@@ -25,13 +25,14 @@ const authSlice = createSlice({
           email: `${role}@dacms.gov`,
           role,
           clearanceLevel: ROLE_CLEARANCE[role],
+          userDepartments: mockDepartments(role),
         };
       }
     },
     setUser(state, action: PayloadAction<User>) {
-      state.user = action.payload;
-      state.role = action.payload.role;
-      state.clearanceLevel = action.payload.clearanceLevel;
+      state.user            = action.payload;
+      state.role            = action.payload.role;
+      state.clearanceLevel  = action.payload.clearanceLevel;
       state.isAuthenticated = true;
     },
     logout(state) {
@@ -42,6 +43,17 @@ const authSlice = createSlice({
     },
   },
 });
+
+function mockDepartments(role: RoleType): string[] {
+  const map: Partial<Record<RoleType, string[]>> = {
+    [RoleType.Beneficiary]: ['dept-legal'],
+    [RoleType.ArchiveOfficer]: ['dept-archive'],
+    [RoleType.ArchiveSupervisor]: ['dept-archive'],
+    [RoleType.CenterDirector]: ['dept-archive', 'dept-legal', 'dept-admin'],
+    [RoleType.Admin]: ['dept-admin'],
+  };
+  return map[role] ?? [];
+}
 
 function mockUserName(role: RoleType): string {
   const names: Record<RoleType, string> = {

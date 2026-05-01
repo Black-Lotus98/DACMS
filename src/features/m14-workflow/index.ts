@@ -6,3 +6,6 @@ export { default as workflowsReducer } from './store/slice';
 export { WorkflowPage } from './components/WorkflowPage';
 export { WorkflowDetailPage } from './components/WorkflowDetailPage';
 export { WorkflowDesignerPage } from './components/WorkflowDesignerPage';
+export { WorkflowTasksPage } from './components/WorkflowTasksPage';
+export { WorkflowExecutionsPage } from './components/WorkflowExecutionsPage';
+export { WorkflowAnalyticsPage } from './components/WorkflowAnalyticsPage';

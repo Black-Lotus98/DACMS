@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { workflowListenerMiddleware } from './workflowListeners';
 import authReducer from './authSlice';
 import { permissionsReducer } from '@/features/m10-permissions';
 import { orgReducer } from '@/features/m13-org-structure';
@@ -17,6 +18,8 @@ import { kpiReducer } from '@/features/m12-kpi';
 import { kpiLinkingReducer } from '@/features/m15-kpi-linking';
 
 export const store = configureStore({
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().prepend(workflowListenerMiddleware.middleware),
   reducer: {
     auth: authReducer,
     permissions: permissionsReducer,
